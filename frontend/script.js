@@ -123,3 +123,46 @@ if (window.location.pathname.endsWith('quiz.html')) {
   // Load questions on page load
   loadQuestions();
 }
+// Only run results logic on results.html
+if (window.location.pathname.endsWith('results.html')) {
+  const resultsContent = document.getElementById('resultsContent');
+
+  // Get last quiz result from localStorage (set after quiz submission)
+  const lastQuizResult = localStorage.getItem('lastQuizResult');
+  if (!lastQuizResult) {
+    resultsContent.innerHTML = '<p>No recent quiz found. <a href="quiz.html">Take a quiz!</a></p>';
+  } else {
+    const result = JSON.parse(lastQuizResult);
+
+    // Show score and summary
+    let html = `<h2>Your Score: ${result.score} / ${result.total}</h2>`;
+
+    // Show topic performance if available
+    if (result.topicPerformance) {
+      html += '<h3>Performance by Topic:</h3><ul>';
+      for (const topic in result.topicPerformance) {
+        const perf = result.topicPerformance[topic];
+        const percent = ((perf.correct / perf.total) * 100).toFixed(1);
+        html += `<li><b>${topic}:</b> ${perf.correct} / ${perf.total} correct (${percent}%)</li>`;
+      }
+      html += '</ul>';
+    }
+
+    // Recommendations (show topics with <70% accuracy)
+    if (result.topicPerformance) {
+      const weakTopics = Object.entries(result.topicPerformance)
+        .filter(([topic, perf]) => perf.correct / perf.total < 0.7)
+        .map(([topic]) => topic);
+      if (weakTopics.length > 0) {
+        html += `<p><b>Recommended for practice:</b> ${weakTopics.join(', ')}</p>`;
+      } else {
+        html += `<p><b>Great job! No weak topics detected.</b></p>`;
+      }
+    }
+
+    html += `<button onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
+             <button onclick="window.location.href='quiz.html'">Practice Again</button>`;
+
+    resultsContent.innerHTML = html;
+  }
+}
