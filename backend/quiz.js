@@ -112,6 +112,21 @@ router.get('/user-weak-topics/:userId', (req, res) => {
     }
   );
 });
+// Get user quiz history
+router.get('/user-history/:userId', (req, res) => {
+  const userId = req.params.userId;
+  db.all(
+    'SELECT score, start_time FROM quiz_attempts WHERE user_id = ? ORDER BY start_time DESC LIMIT 10',
+    [userId],
+    (err, rows) => {
+      if (err) {
+        console.error('Quiz history error:', err);
+        return res.status(500).json({ error: 'Database error' });
+      }
+      res.json(rows);
+    }
+  );
+});
 
 module.exports = router;
 

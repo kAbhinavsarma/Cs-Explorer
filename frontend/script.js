@@ -166,3 +166,57 @@ if (window.location.pathname.endsWith('results.html')) {
     resultsContent.innerHTML = html;
   }
 }
+// Only run dashboard logic on dashboard.html
+if (window.location.pathname.endsWith('dashboard.html')) {
+  const dashboardContent = document.getElementById('dashboardContent');
+  const userId = localStorage.getItem('userId');
+
+  async function loadDashboard() {
+    if (!userId) {
+      dashboardContent.innerHTML = '<p>Please log in to view your dashboard.</p>';
+      return;
+    }
+
+    // Fetch weak topics
+    const weakRes = await fetch(`http://localhost:5000/api/user-weak-topics/${userId}`);
+    const weakData = await weakRes.json();
+
+    // Fetch quiz history (add this endpoint to your backend if not present)
+    let quizHistory = [];
+    try {
+      const histRes = await fetch(`http://localhost:5000/api/user-history/${userId}`);
+      quizHistory = await histRes.json();
+    } catch (e) {
+      // If not implemented, skip
+    }
+
+    let html = `<h2>Your Dashboard</h2>`;
+
+    // Show weak topics
+    if (weakData.topics && weakData.topics.length > 0) {
+      html += '<h3>Your Weakest Topics:</h3><ul>';
+      weakData.topics.forEach(topic => {
+        const percent = ((topic.correct / topic.total) * 100).toFixed(1);
+        html += `<li><b>${topic.topic}:</b> ${topic.correct} / ${topic.total} correct (${percent}%)</li>`;
+      });
+      html += '</ul>';
+    } else {
+      html += '<p>No weak topics detected yet. Keep practicing!</p>';
+    }
+
+    // Show quiz history
+    if (quizHistory.length > 0) {
+      html += '<h3>Quiz History:</h3><ul>';
+      quizHistory.forEach(q => {
+        html += `<li>Score: ${q.score}, Date: ${new Date(q.start_time).toLocaleString()}</li>`;
+      });
+      html += '</ul>';
+    }
+
+    html += `<button onclick="window.location.href='quiz.html'">Start New Quiz</button>`;
+
+    dashboardContent.innerHTML = html;
+  }
+
+  loadDashboard();
+}
