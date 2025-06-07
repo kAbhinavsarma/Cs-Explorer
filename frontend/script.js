@@ -214,6 +214,24 @@ if (window.location.pathname.endsWith('dashboard.html')) {
     }
 
     html += `<button onclick="window.location.href='quiz.html'">Start New Quiz</button>`;
+    // Mock badge data (replace with real logic later if needed)
+const mockBadges = [
+  { name: "First Quiz", earned: true, description: "Completed your first quiz!" },
+  { name: "Topic Master", earned: false, description: "Scored 100% on a topic." },
+  { name: "Practice Streak", earned: true, description: "Quizzed 3 days in a row!" },
+  { name: "High Score", earned: false, description: "Scored 80% or higher on a quiz." }
+];
+
+let badgesHTML = '';
+mockBadges.forEach(badge => {
+  badgesHTML += `<div class="badge ${badge.earned ? 'earned' : 'locked'}">
+    <span>${badge.earned ? '🏆' : '🔒'}</span>
+    <strong>${badge.name}</strong>
+    <p>${badge.description}</p>
+  </div>`;
+});
+
+document.getElementById('badgesList').innerHTML = badgesHTML;
 
     dashboardContent.innerHTML = html;
   }
