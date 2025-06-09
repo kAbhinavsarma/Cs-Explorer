@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const data = await response.json();
       if (response.ok) {
         // Save user info (for demo: localStorage)
+        showFeedback('Login successful!', false);
         localStorage.setItem('userId', data.userId);
         localStorage.setItem('username', data.username);
         // Redirect to dashboard
@@ -113,6 +114,14 @@ if (window.location.pathname.endsWith('quiz.html')) {
         answers: answersArr
       })
     });
+    function showFeedback(message, isError = false) {
+    const feedback = document.createElement('div');
+    feedback.className = isError ? 'feedback error' : 'feedback';
+    feedback.textContent = message;
+    document.body.appendChild(feedback);
+    setTimeout(() => feedback.remove(), 3000);
+  }
+
     const result = await response.json();
     // Save result for results page
     localStorage.setItem('lastQuizResult', JSON.stringify(result));
@@ -230,6 +239,23 @@ mockBadges.forEach(badge => {
     <p>${badge.description}</p>
   </div>`;
 });
+function showSpinner(show = true) {
+  let spinner = document.getElementById('spinner');
+  if (show) {
+    if (!spinner) {
+      spinner = document.createElement('div');
+      spinner.className = 'spinner';
+      spinner.id = 'spinner';
+      document.body.appendChild(spinner);
+    }
+  } else if (spinner) {
+    spinner.remove();
+  }
+}
+// Example usage:
+// showSpinner(true);
+// await fetch(...);
+// showSpinner(false);
 
 document.getElementById('badgesList').innerHTML = badgesHTML;
 

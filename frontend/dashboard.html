@@ -1,39 +1,230 @@
-<nav>
-  <a href="dashboard.html">Dashboard</a>
-  <a href="quiz.html">Quiz</a>
-  <a href="results.html">Results</a>
-  <a href="index.html">Logout</a>
-</nav>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CS Explorer - Dashboard</title>
   <link rel="stylesheet" href="styles.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-  <nav>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="quiz.html">Quiz</a>
-    <a href="results.html">Results</a>
-    <a href="index.html">Logout</a>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="dashboard.html" class="nav-brand">
+        <i class="fas fa-code"></i>
+        CS Explorer
+      </a>
+      <div class="nav-links">
+        <a href="dashboard.html" class="nav-link active">
+          <i class="fas fa-tachometer-alt"></i>
+          Dashboard
+        </a>
+        <a href="quiz.html" class="nav-link">
+          <i class="fas fa-question-circle"></i>
+          Quiz
+        </a>
+        <a href="results.html" class="nav-link">
+          <i class="fas fa-chart-line"></i>
+          Results
+        </a>
+        <a href="index.html" class="nav-link">
+          <i class="fas fa-sign-out-alt"></i>
+          Logout
+        </a>
+      </div>
+    </div>
   </nav>
-  <h1>Dashboard</h1>
-  <p>Welcome! View your progress and start a quiz.</p>
-  <div id="dashboardContent">
-    <!-- Dynamic content like stats, badges, weak topics will go here -->
-  </div>
-  <div id="badgesSection">
-  <h3>Your Badges</h3>
-  <div id="badgesList">
-    <!-- Badges will be shown here -->
-  </div>
-</div>
 
-  <script src="script.js">// Redirect to login if not logged in
-if (!localStorage.getItem('userId')) {
-  window.location.href = 'index.html';
-}
-</script>
+  <div class="main-container">
+    <div class="page-header">
+      <h1 class="page-title">Dashboard</h1>
+      <p class="page-subtitle">Track your progress and continue learning</p>
+    </div>
+
+    <!-- Welcome Message -->
+    <div class="welcome-banner">
+      <div class="welcome-content">
+        <h2>Welcome back, <span id="usernameDisplay">Student</span>! 👋</h2>
+        <p>Ready to continue your computer science journey?</p>
+      </div>
+      <div class="welcome-action">
+        <a href="quiz.html" class="btn btn-primary btn-lg">
+          <i class="fas fa-play"></i>
+          Start Quiz
+        </a>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card primary">
+        <div class="stat-icon">
+          <i class="fas fa-clipboard-list"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number" id="totalQuizzes">0</div>
+          <div class="stat-label">Quizzes Completed</div>
+        </div>
+      </div>
+      <div class="stat-card success">
+        <div class="stat-icon">
+          <i class="fas fa-percentage"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number" id="averageScore">0%</div>
+          <div class="stat-label">Average Score</div>
+        </div>
+      </div>
+      <div class="stat-card warning">
+        <div class="stat-icon">
+          <i class="fas fa-trophy"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number" id="badgesEarned">0</div>
+          <div class="stat-label">Badges Earned</div>
+        </div>
+      </div>
+      <div class="stat-card info">
+        <div class="stat-icon">
+          <i class="fas fa-fire"></i>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number" id="streakCount">0</div>
+          <div class="stat-label">Day Streak</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="dashboard-grid">
+      <!-- Progress Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+          <div class="card-title-section">
+            <h3 class="card-title">Your Progress</h3>
+            <p class="card-subtitle">Performance by topic</p>
+          </div>
+        </div>
+        <div class="card-content">
+          <div id="progressContent">
+            <div class="empty-state">
+              <i class="fas fa-chart-line"></i>
+              <p>Take your first quiz to see your progress!</p>
+              <a href="quiz.html" class="btn btn-secondary">
+                <i class="fas fa-play"></i>
+                Start First Quiz
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weak Topics Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon warning">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="card-title-section">
+            <h3 class="card-title">Focus Areas</h3>
+            <p class="card-subtitle">Topics that need more practice</p>
+          </div>
+        </div>
+        <div class="card-content">
+          <div id="weakTopicsContent">
+            <div class="empty-state">
+              <i class="fas fa-target"></i>
+              <p>Complete more quizzes to identify focus areas!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon info">
+            <i class="fas fa-history"></i>
+          </div>
+          <div class="card-title-section">
+            <h3 class="card-title">Recent Activity</h3>
+            <p class="card-subtitle">Your latest quiz attempts</p>
+          </div>
+        </div>
+        <div class="card-content">
+          <div id="recentActivityContent">
+            <div class="empty-state">
+              <i class="fas fa-clock"></i>
+              <p>No recent activity yet</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Achievements Card -->
+      <div class="card achievements-card">
+        <div class="card-header">
+          <div class="card-icon success">
+            <i class="fas fa-medal"></i>
+          </div>
+          <div class="card-title-section">
+            <h3 class="card-title">Achievements</h3>
+            <p class="card-subtitle">Your earned badges and milestones</p>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="badges-grid" id="badgesList">
+            <!-- Badges will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <h3>Quick Actions</h3>
+      <div class="actions-grid">
+        <a href="quiz.html" class="action-card">
+          <div class="action-icon">
+            <i class="fas fa-play"></i>
+          </div>
+          <div class="action-content">
+            <h4>Take New Quiz</h4>
+            <p>Start a fresh quiz session</p>
+          </div>
+        </a>
+        <a href="results.html" class="action-card">
+          <div class="action-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <div class="action-content">
+            <h4>View Results</h4>
+            <p>Check your latest scores</p>
+          </div>
+        </a>
+        <a href="#" class="action-card" onclick="showProfile()">
+          <div class="action-icon">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="action-content">
+            <h4>Profile Settings</h4>
+            <p>Manage your account</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    // Redirect to login if not logged in
+    if (!localStorage.getItem('userId') && !localStorage.getItem('username')) {
+      window.location.href = 'index.html';
+    }
+  </script>
 </body>
 </html>

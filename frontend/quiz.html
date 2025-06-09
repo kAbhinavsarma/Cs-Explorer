@@ -1,33 +1,251 @@
-<nav>
-  <a href="dashboard.html">Dashboard</a>
-  <a href="quiz.html">Quiz</a>
-  <a href="results.html">Results</a>
-  <a href="index.html">Logout</a>
-</nav>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CS Explorer - Quiz</title>
   <link rel="stylesheet" href="styles.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-  <nav>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="quiz.html">Quiz</a>
-    <a href="results.html">Results</a>
-    <a href="index.html">Logout</a>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="dashboard.html" class="nav-brand">
+        <i class="fas fa-code"></i>
+        CS Explorer
+      </a>
+      <div class="nav-links">
+        <a href="dashboard.html" class="nav-link">
+          <i class="fas fa-tachometer-alt"></i>
+          Dashboard
+        </a>
+        <a href="quiz.html" class="nav-link active">
+          <i class="fas fa-question-circle"></i>
+          Quiz
+        </a>
+        <a href="results.html" class="nav-link">
+          <i class="fas fa-chart-line"></i>
+          Results
+        </a>
+        <a href="index.html" class="nav-link">
+          <i class="fas fa-sign-out-alt"></i>
+          Logout
+        </a>
+      </div>
+    </div>
   </nav>
-  <h1>Quiz</h1>
-  <div id="quizContent">
-    <!-- Quiz questions and options will appear here -->
+
+  <div class="main-container">
+    <div class="page-header">
+      <h1 class="page-title">Computer Science Quiz</h1>
+      <p class="page-subtitle">Test your knowledge and improve your skills</p>
+    </div>
+
+    <!-- Quiz Progress Bar -->
+    <div class="quiz-progress-container">
+      <div class="progress-info">
+        <span class="progress-text">Question <span id="currentQuestion">1</span> of <span id="totalQuestions">5</span></span>
+        <span class="time-remaining" id="timeRemaining">⏱️ 10:00</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 20%"></div>
+      </div>
+    </div>
+
+    <!-- Quiz Container -->
+    <div class="quiz-container">
+      <div id="quizContent">
+        <div class="loading-spinner">
+          <div class="spinner"></div>
+          <p>Loading quiz questions...</p>
+        </div>
+      </div>
+
+      <!-- Quiz Navigation -->
+      <div class="quiz-navigation" id="quizNavigation" style="display: none;">
+        <div class="nav-buttons">
+          <button id="prevBtn" class="btn btn-secondary" onclick="previousQuestion()" disabled>
+            <i class="fas fa-chevron-left"></i>
+            Previous
+          </button>
+          <button id="nextBtn" class="btn btn-primary" onclick="nextQuestion()">
+            Next
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+        <div class="question-indicators" id="questionIndicators">
+          <!-- Question dots will be generated here -->
+        </div>
+      </div>
+
+      <!-- Submit Quiz Button -->
+      <div class="submit-container" id="submitContainer" style="display: none;">
+        <div class="submit-warning">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>Make sure you've answered all questions before submitting!</p>
+        </div>
+        <button id="submitQuizBtn" class="btn btn-success btn-lg">
+          <i class="fas fa-check"></i>
+          Submit Quiz
+        </button>
+      </div>
+    </div>
+
+    <!-- Quiz Instructions Modal -->
+    <div class="modal" id="instructionsModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Quiz Instructions</h3>
+          <button class="modal-close" onclick="closeInstructions()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="instruction-item">
+            <i class="fas fa-clock"></i>
+            <div>
+              <h4>Time Limit</h4>
+              <p>You have 10 minutes to complete the quiz</p>
+            </div>
+          </div>
+          <div class="instruction-item">
+            <i class="fas fa-list"></i>
+            <div>
+              <h4>Questions</h4>
+              <p>The quiz contains 5 multiple-choice questions</p>
+            </div>
+          </div>
+          <div class="instruction-item">
+            <i class="fas fa-check-circle"></i>
+            <div>
+              <h4>Selection</h4>
+              <p>Choose the best answer for each question</p>
+            </div>
+          </div>
+          <div class="instruction-item">
+            <i class="fas fa-save"></i>
+            <div>
+              <h4>Auto-Save</h4>
+              <p>Your answers are automatically saved as you progress</p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary btn-lg" onclick="startQuiz()">
+            <i class="fas fa-play"></i>
+            Start Quiz
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
-  <button id="submitQuizBtn" style="display:none;">Submit Quiz</button>
-  <script src="script.js">// Redirect to login if not logged in
-if (!localStorage.getItem('userId')) {
-  window.location.href = 'index.html';
-}
-</script>
+
+  <script src="script.js"></script>
+  <script>
+    // Redirect to login if not logged in
+    if (!localStorage.getItem('userId') && !localStorage.getItem('username')) {
+      window.location.href = 'index.html';
+    }
+
+    // Show instructions modal on page load
+    window.addEventListener('load', function() {
+      document.getElementById('instructionsModal').style.display = 'flex';
+    });
+
+    function closeInstructions() {
+      document.getElementById('instructionsModal').style.display = 'none';
+    }
+
+    function startQuiz() {
+      closeInstructions();
+      // Quiz will be loaded by script.js
+    }
+
+    // Quiz navigation functions
+    let currentQuestionIndex = 0;
+    let totalQuestionsCount = 0;
+
+    function previousQuestion() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        showQuestion(currentQuestionIndex);
+        updateProgress();
+      }
+    }
+
+    function nextQuestion() {
+      if (currentQuestionIndex < totalQuestionsCount - 1) {
+        currentQuestionIndex++;
+        showQuestion(currentQuestionIndex);
+        updateProgress();
+      }
+    }
+
+    function updateProgress() {
+      const progress = ((currentQuestionIndex + 1) / totalQuestionsCount) * 100;
+      document.getElementById('progressFill').style.width = progress + '%';
+      document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+      
+      // Update navigation buttons
+      document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+      document.getElementById('nextBtn').style.display = 
+        currentQuestionIndex === totalQuestionsCount - 1 ? 'none' : 'inline-flex';
+      
+      // Show submit button on last question
+      document.getElementById('submitContainer').style.display = 
+        currentQuestionIndex === totalQuestionsCount - 1 ? 'block' : 'none';
+      
+      // Update question indicators
+      updateQuestionIndicators();
+    }
+
+    function updateQuestionIndicators() {
+      const indicators = document.querySelectorAll('.question-dot');
+      indicators.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentQuestionIndex);
+        dot.classList.toggle('completed', index < currentQuestionIndex);
+      });
+    }
+
+    function jumpToQuestion(index) {
+      currentQuestionIndex = index;
+      showQuestion(currentQuestionIndex);
+      updateProgress();
+    }
+
+    // Timer functionality
+    let quizTimer;
+    let timeRemaining = 600; // 10 minutes in seconds
+
+    function startTimer() {
+      quizTimer = setInterval(() => {
+        timeRemaining--;
+        updateTimerDisplay();
+        
+        if (timeRemaining <= 0) {
+          clearInterval(quizTimer);
+          autoSubmitQuiz();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(timeRemaining / 60);
+      const seconds = timeRemaining % 60;
+      const display = `⏱️ ${minutes}:${seconds.toString().padStart(2, '0')}`;
+      document.getElementById('timeRemaining').textContent = display;
+      
+      // Add warning class when time is running low
+      if (timeRemaining <= 60) {
+        document.getElementById('timeRemaining').classList.add('time-warning');
+      }
+    }
+
+    function autoSubmitQuiz() {
+      alert('Time\'s up! Your quiz will be submitted automatically.');
+      document.getElementById('submitQuizBtn').click();
+    }
+  </script>
 </body>
 </html>
-

@@ -86,3 +86,85 @@ input, button {
 .badge span {
   font-size: 2em;
 }
+/* Base styles for all screens */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f5f6fa;
+  min-height: 100vh;
+}
+nav {
+  background: #222;
+  padding: 1em;
+  text-align: center;
+}
+nav a {
+  color: #fff;
+  margin: 0 0.5em;
+  text-decoration: none;
+  font-weight: bold;
+}
+h1, h2, h3 {
+  color: #333;
+  text-align: center;
+  margin: 0.5em 0;
+}
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1em;
+}
+
+/* Responsive styles for mobile */
+@media (max-width: 600px) {
+  nav a {
+    display: block;
+    margin: 0.5em 0;
+  }
+  .container, .quiz-question, .badge {
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0.5em;
+    padding: 0.75em;
+  }
+  .badge {
+    width: auto;
+  }
+}
+/* Animation for feedback */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.quiz-question, .badge, .result-card {
+  animation: fadeIn 0.5s ease-out;
+}
+.feedback {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #4CAF50;
+  color: white;
+  padding: 0.75em 1.5em;
+  border-radius: 4px;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+.feedback.error {
+  background: #f44336;
+}
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 4px solid #222;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 2em auto;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

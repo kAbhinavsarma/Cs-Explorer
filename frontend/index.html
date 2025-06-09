@@ -1,37 +1,147 @@
-<nav>
-  <a href="dashboard.html">Dashboard</a>
-  <a href="quiz.html">Quiz</a>
-  <a href="results.html">Results</a>
-  <a href="index.html">Logout</a>
-</nav>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CS Explorer - Login/Signup</title>
   <link rel="stylesheet" href="styles.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-  <nav>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="quiz.html">Quiz</a>
-    <a href="results.html">Results</a>
-    <a href="index.html">Logout</a>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">
+        <i class="fas fa-code"></i>
+        CS Explorer
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link active">
+          <i class="fas fa-home"></i>
+          Home
+        </a>
+        <a href="dashboard.html" class="nav-link">
+          <i class="fas fa-tachometer-alt"></i>
+          Dashboard
+        </a>
+        <a href="quiz.html" class="nav-link">
+          <i class="fas fa-question-circle"></i>
+          Quiz
+        </a>
+        <a href="results.html" class="nav-link">
+          <i class="fas fa-chart-line"></i>
+          Results
+        </a>
+      </div>
+    </div>
   </nav>
-  <h1>Welcome to CS Explorer!</h1>
-  <form id="loginForm">
-    <h2>Login</h2>
-    <input type="text" id="loginUsername" placeholder="Username" required><br>
-    <input type="password" id="loginPassword" placeholder="Password" required><br>
-    <button type="submit">Login</button>
-  </form>
-  <form id="signupForm">
-    <h2>Sign Up</h2>
-    <input type="text" id="signupUsername" placeholder="Username" required><br>
-    <input type="email" id="signupEmail" placeholder="Email" required><br>
-    <input type="password" id="signupPassword" placeholder="Password" required><br>
-    <button type="submit">Sign Up</button>
-  </form>
+
+  <div class="main-container">
+    <div class="page-header">
+      <h1 class="page-title">Welcome to CS Explorer</h1>
+      <p class="page-subtitle">Your personalized computer science learning platform</p>
+    </div>
+
+    <div class="auth-container">
+      <!-- Login Form -->
+      <div class="auth-card">
+        <div class="auth-header">
+          <div class="auth-icon">
+            <i class="fas fa-sign-in-alt"></i>
+          </div>
+          <h2 class="auth-title">Sign In</h2>
+          <p class="auth-subtitle">Welcome back! Please sign in to continue.</p>
+        </div>
+        <form id="loginForm">
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-user"></i>
+              Username
+            </label>
+            <input type="text" id="loginUsername" class="form-input" placeholder="Enter your username" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-lock"></i>
+              Password
+            </label>
+            <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fas fa-sign-in-alt"></i>
+            Sign In
+          </button>
+        </form>
+      </div>
+
+      <!-- Signup Form -->
+      <div class="auth-card">
+        <div class="auth-header">
+          <div class="auth-icon signup">
+            <i class="fas fa-user-plus"></i>
+          </div>
+          <h2 class="auth-title">Create Account</h2>
+          <p class="auth-subtitle">New here? Create your account to get started.</p>
+        </div>
+        <form id="signupForm">
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-user"></i>
+              Username
+            </label>
+            <input type="text" id="signupUsername" class="form-input" placeholder="Choose a username" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-envelope"></i>
+              Email
+            </label>
+            <input type="email" id="signupEmail" class="form-input" placeholder="Enter your email" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-lock"></i>
+              Password
+            </label>
+            <input type="password" id="signupPassword" class="form-input" placeholder="Create a password" required>
+          </div>
+          <button type="submit" class="btn btn-success btn-lg">
+            <i class="fas fa-user-plus"></i>
+            Create Account
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="features-section">
+      <h2 class="section-title">Why Choose CS Explorer?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-brain"></i>
+          </div>
+          <h3>Adaptive Learning</h3>
+          <p>Personalized quizzes that adapt to your skill level and focus on your weak areas.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <h3>Progress Tracking</h3>
+          <p>Monitor your improvement with detailed analytics and performance insights.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-trophy"></i>
+          </div>
+          <h3>Achievement System</h3>
+          <p>Earn badges and unlock achievements as you master different CS topics.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
