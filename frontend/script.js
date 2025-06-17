@@ -1,31 +1,61 @@
-// script.js
-// This file will handle dynamic content and API calls in future steps.
-//console.log('CS Explorer frontend loaded.');
-// Handle Login Form Submission
 document.addEventListener('DOMContentLoaded', function () {
+  // Theme toggle functionality
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', function() {
+      document.body.classList.toggle('dark-mode');
+      const icon = this.querySelector('i');
+      if (document.body.classList.contains('dark-mode')) {
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        icon.classList.remove('fa-sun');
+        icon.classList.add('fa-moon');
+        localStorage.setItem('theme', 'light');
+      }
+    });
+    
+    // Apply saved theme
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+      themeToggle.querySelector('i').classList.remove('fa-moon');
+      themeToggle.querySelector('i').classList.add('fa-sun');
+    }
+  }
+  
   // Login
   const loginForm = document.getElementById('loginForm');
   if (loginForm) {
     loginForm.addEventListener('submit', async function (e) {
       e.preventDefault();
+      showLoading();
       const username = document.getElementById('loginUsername').value;
       const password = document.getElementById('loginPassword').value;
 
-      const response = await fetch('http://localhost:5000/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-      const data = await response.json();
-      if (response.ok) {
-        // Save user info (for demo: localStorage)
-        showFeedback('Login successful!', false);
-        localStorage.setItem('userId', data.userId);
-        localStorage.setItem('username', data.username);
-        // Redirect to dashboard
-        window.location.href = 'dashboard.html';
-      } else {
-        alert(data.error || 'Login failed');
+      try {
+        const response = await fetch('http://localhost:5000/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        if (response.ok) {
+          showFeedback('Login successful! Redirecting...', false);
+          localStorage.setItem('userId', data.userId);
+          localStorage.setItem('username', data.username);
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+          }, 1500);
+        } else {
+          showFeedback(data.error || 'Login failed', true);
+        }
+      } catch (error) {
+        showFeedback('Network error. Please try again.', true);
+      } finally {
+        hideLoading();
       }
     });
   }
@@ -35,27 +65,35 @@ document.addEventListener('DOMContentLoaded', function () {
   if (signupForm) {
     signupForm.addEventListener('submit', async function (e) {
       e.preventDefault();
+      showLoading();
       const username = document.getElementById('signupUsername').value;
       const email = document.getElementById('signupEmail').value;
       const password = document.getElementById('signupPassword').value;
 
-      const response = await fetch('http://localhost:5000/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password })
-      });
-      const data = await response.json();
-      if (response.ok) {
-        alert('Signup successful! Please log in.');
-        // Optionally, auto-fill login form
-        document.getElementById('loginUsername').value = username;
-        document.getElementById('loginPassword').value = password;
-      } else {
-        alert(data.error || 'Signup failed');
+      try {
+        const response = await fetch('http://localhost:5000/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, email, password })
+        });
+        
+        const data = await response.json();
+        if (response.ok) {
+          showFeedback('Signup successful! Please log in.', false);
+          document.getElementById('loginUsername').value = username;
+          document.getElementById('loginPassword').value = password;
+        } else {
+          showFeedback(data.error || 'Signup failed', true);
+        }
+      } catch (error) {
+        showFeedback('Network error. Please try again.', true);
+      } finally {
+        hideLoading();
       }
     });
   }
 });
+
 // Only run quiz logic on quiz.html
 if (window.location.pathname.endsWith('quiz.html')) {
   const quizContent = document.getElementById('quizContent');
@@ -65,11 +103,17 @@ if (window.location.pathname.endsWith('quiz.html')) {
 
   // Fetch questions from backend
   async function loadQuestions() {
-    const userId = localStorage.getItem('userId');
-    // You can add topic or adaptive logic here if you want
-    const response = await fetch('http://localhost:5000/api/questions');
-    questions = await response.json();
-    displayQuestions();
+    showLoading();
+    try {
+      const userId = localStorage.getItem('userId');
+      const response = await fetch('http://localhost:5000/api/questions');
+      questions = await response.json();
+      displayQuestions();
+    } catch (error) {
+      quizContent.innerHTML = '<p class="error">Failed to load questions. Please try again later.</p>';
+    } finally {
+      hideLoading();
+    }
   }
 
   // Display questions and options
@@ -88,11 +132,33 @@ if (window.location.pathname.endsWith('quiz.html')) {
       `;
       quizContent.appendChild(qDiv);
     });
-    submitBtn.style.display = 'block';
+    
+    // Show navigation
+    document.getElementById('quizNavigation').style.display = 'block';
+    
+    // Create question indicators
+    const indicators = document.getElementById('questionIndicators');
+    indicators.innerHTML = '';
+    for (let i = 0; i < questions.length; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'shortcut-btn';
+      btn.textContent = i + 1;
+      btn.onclick = () => jumpToQuestion(i);
+      indicators.appendChild(btn);
+    }
+    
+    // Update progress
+    totalQuestionsCount = questions.length;
+    document.getElementById('totalQuestions').textContent = totalQuestionsCount;
+    updateProgress();
+    
+    // Start timer
+    startTimer();
   }
 
   // Collect answers and submit
   submitBtn.onclick = async function () {
+    showLoading();
     userAnswers = {};
     questions.forEach(q => {
       const selected = document.querySelector(`input[name="q${q.id}"]:checked`);
@@ -105,33 +171,43 @@ if (window.location.pathname.endsWith('quiz.html')) {
       selectedOption: userAnswers[q.id]
     }));
 
-    // Send to backend
-    const response = await fetch('http://localhost:5000/api/submit-quiz', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        userId: localStorage.getItem('userId'),
-        answers: answersArr
-      })
-    });
-    function showFeedback(message, isError = false) {
-    const feedback = document.createElement('div');
-    feedback.className = isError ? 'feedback error' : 'feedback';
-    feedback.textContent = message;
-    document.body.appendChild(feedback);
-    setTimeout(() => feedback.remove(), 3000);
-  }
-
-    const result = await response.json();
-    // Save result for results page
-    localStorage.setItem('lastQuizResult', JSON.stringify(result));
-    // Redirect to results page
-    window.location.href = 'results.html';
+    try {
+      // Send to backend
+      const response = await fetch('http://localhost:5000/api/submit-quiz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: localStorage.getItem('userId'),
+          answers: answersArr
+        })
+      });
+      
+      const result = await response.json();
+      if (response.ok) {
+        // Save result for results page
+        localStorage.setItem('lastQuizResult', JSON.stringify(result));
+        
+        // Show confetti for good performance
+        if (result.score / result.total >= 0.8) {
+          showConfetti();
+        }
+        
+        // Redirect to results page
+        window.location.href = 'results.html';
+      } else {
+        showFeedback('Failed to submit quiz. Please try again.', true);
+      }
+    } catch (error) {
+      showFeedback('Network error. Please try again.', true);
+    } finally {
+      hideLoading();
+    }
   };
 
   // Load questions on page load
   loadQuestions();
 }
+
 // Only run results logic on results.html
 if (window.location.pathname.endsWith('results.html')) {
   const resultsContent = document.getElementById('resultsContent');
@@ -175,6 +251,7 @@ if (window.location.pathname.endsWith('results.html')) {
     resultsContent.innerHTML = html;
   }
 }
+
 // Only run dashboard logic on dashboard.html
 if (window.location.pathname.endsWith('dashboard.html')) {
   const dashboardContent = document.getElementById('dashboardContent');
@@ -190,7 +267,7 @@ if (window.location.pathname.endsWith('dashboard.html')) {
     const weakRes = await fetch(`http://localhost:5000/api/user-weak-topics/${userId}`);
     const weakData = await weakRes.json();
 
-    // Fetch quiz history (add this endpoint to your backend if not present)
+    // Fetch quiz history
     let quizHistory = [];
     try {
       const histRes = await fetch(`http://localhost:5000/api/user-history/${userId}`);
@@ -223,44 +300,64 @@ if (window.location.pathname.endsWith('dashboard.html')) {
     }
 
     html += `<button onclick="window.location.href='quiz.html'">Start New Quiz</button>`;
-    // Mock badge data (replace with real logic later if needed)
-const mockBadges = [
-  { name: "First Quiz", earned: true, description: "Completed your first quiz!" },
-  { name: "Topic Master", earned: false, description: "Scored 100% on a topic." },
-  { name: "Practice Streak", earned: true, description: "Quizzed 3 days in a row!" },
-  { name: "High Score", earned: false, description: "Scored 80% or higher on a quiz." }
-];
+    
+    // Mock badge data
+    const mockBadges = [
+      { name: "First Quiz", earned: true, description: "Completed your first quiz!" },
+      { name: "Topic Master", earned: false, description: "Scored 100% on a topic." },
+      { name: "Practice Streak", earned: true, description: "Quizzed 3 days in a row!" },
+      { name: "High Score", earned: false, description: "Scored 80% or higher on a quiz." }
+    ];
 
-let badgesHTML = '';
-mockBadges.forEach(badge => {
-  badgesHTML += `<div class="badge ${badge.earned ? 'earned' : 'locked'}">
-    <span>${badge.earned ? '🏆' : '🔒'}</span>
-    <strong>${badge.name}</strong>
-    <p>${badge.description}</p>
-  </div>`;
-});
-function showSpinner(show = true) {
-  let spinner = document.getElementById('spinner');
-  if (show) {
-    if (!spinner) {
-      spinner = document.createElement('div');
-      spinner.className = 'spinner';
-      spinner.id = 'spinner';
-      document.body.appendChild(spinner);
-    }
-  } else if (spinner) {
-    spinner.remove();
-  }
-}
-// Example usage:
-// showSpinner(true);
-// await fetch(...);
-// showSpinner(false);
+    let badgesHTML = '';
+    mockBadges.forEach(badge => {
+      badgesHTML += `<div class="badge ${badge.earned ? 'earned' : 'locked'}">
+        <span>${badge.earned ? '🏆' : '🔒'}</span>
+        <strong>${badge.name}</strong>
+        <p>${badge.description}</p>
+      </div>`;
+    });
 
-document.getElementById('badgesList').innerHTML = badgesHTML;
+    document.getElementById('badgesList').innerHTML = badgesHTML;
 
     dashboardContent.innerHTML = html;
   }
 
   loadDashboard();
+}
+
+// Utility functions
+function showLoading() {
+  const overlay = document.createElement('div');
+  overlay.className = 'loading-overlay';
+  overlay.innerHTML = '<div class="spinner"></div>';
+  document.body.appendChild(overlay);
+}
+
+function hideLoading() {
+  const overlay = document.querySelector('.loading-overlay');
+  if (overlay) overlay.remove();
+}
+
+function showFeedback(message, isError = false) {
+  const feedback = document.createElement('div');
+  feedback.className = isError ? 'feedback error' : 'feedback';
+  feedback.textContent = message;
+  document.body.appendChild(feedback);
+  setTimeout(() => feedback.remove(), 3000);
+}
+
+function showConfetti() {
+  for (let i = 0; i < 150; i++) {
+    const confetti = document.createElement('div');
+    confetti.className = 'confetti';
+    confetti.style.left = Math.random() * 100 + 'vw';
+    confetti.style.animationDelay = Math.random() * 2 + 's';
+    confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 60%)`;
+    document.body.appendChild(confetti);
+    
+    setTimeout(() => {
+      confetti.remove();
+    }, 5000);
+  }
 }

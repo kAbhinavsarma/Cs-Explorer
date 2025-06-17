@@ -71,6 +71,22 @@
             </div>
             <div class="score-percentage" id="scorePercentage">0%</div>
             <div class="score-grade" id="scoreGrade">Grade: A</div>
+            
+            <!-- Performance Comparison -->
+            <div class="performance-comparison">
+              <div class="comparison-item">
+                <span>Your Score</span>
+                <div class="comparison-value">78%</div>
+              </div>
+              <div class="comparison-item">
+                <span>Class Average</span>
+                <div class="comparison-value">65%</div>
+              </div>
+              <div class="comparison-item">
+                <span>Improvement</span>
+                <div class="comparison-value positive">+13%</div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -89,7 +105,27 @@
             </div>
             <div class="card-content">
               <div id="topicPerformance">
-                <!-- Topic performance will be loaded here -->
+                <div class="topic-performance-item">
+                  <span>Algorithms</span>
+                  <span>70%</span>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 70%"></div>
+                  </div>
+                </div>
+                <div class="topic-performance-item">
+                  <span>Data Structures</span>
+                  <span>85%</span>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 85%"></div>
+                  </div>
+                </div>
+                <div class="topic-performance-item">
+                  <span>Operating Systems</span>
+                  <span>50%</span>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 50%"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -107,7 +143,11 @@
             </div>
             <div class="card-content">
               <div id="recommendations">
-                <!-- Recommendations will be loaded here -->
+                <ul>
+                  <li>Review sorting algorithms (Bubble, Merge, Quick)</li>
+                  <li>Practice tree traversal techniques</li>
+                  <li>Study process scheduling algorithms</li>
+                </ul>
               </div>
             </div>
           </div>
@@ -127,15 +167,15 @@
               <div id="timeAnalysis">
                 <div class="time-stat">
                   <span class="time-label">Total Time:</span>
-                  <span class="time-value" id="totalTime">0:00</span>
+                  <span class="time-value" id="totalTime">8:24</span>
                 </div>
                 <div class="time-stat">
                   <span class="time-label">Average per Question:</span>
-                  <span class="time-value" id="avgTime">0:00</span>
+                  <span class="time-value" id="avgTime">1:41</span>
                 </div>
                 <div class="time-stat">
                   <span class="time-label">Time Remaining:</span>
-                  <span class="time-value" id="timeRemaining">0:00</span>
+                  <span class="time-value" id="timeRemaining">1:36</span>
                 </div>
               </div>
             </div>
@@ -154,7 +194,20 @@
             </div>
             <div class="card-content">
               <div id="achievementProgress">
-                <!-- Achievement progress will be loaded here -->
+                <div class="achievement-item">
+                  <span>Algorithm Master</span>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 70%"></div>
+                  </div>
+                  <span>70% complete</span>
+                </div>
+                <div class="achievement-item">
+                  <span>Quick Thinker</span>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 40%"></div>
+                  </div>
+                  <span>40% complete</span>
+                </div>
               </div>
             </div>
           </div>
@@ -173,15 +226,38 @@
           </div>
           <div class="card-content">
             <div id="questionReview">
-              <!-- Each question's result will be dynamically inserted -->
-              <!-- Example (can be cloned in JS):
               <div class="question-block">
-                <div class="question-text">Q1: What is the output of ...?</div>
-                <div class="user-answer incorrect">Your Answer: B</div>
-                <div class="correct-answer">Correct Answer: C</div>
-                <div class="explanation">Explanation: Because...</div>
+                <div class="question-text"><b>Q1:</b> What is the time complexity of Bubble Sort in the worst case?</div>
+                <div class="user-answer correct">Your Answer: O(n²)</div>
+                <div class="explanation">Correct! Bubble Sort has O(n²) time complexity in worst case.</div>
               </div>
-              -->
+              <div class="question-block">
+                <div class="question-text"><b>Q2:</b> Which data structure uses FIFO (First-In-First-Out) principle?</div>
+                <div class="user-answer incorrect">Your Answer: Stack</div>
+                <div class="correct-answer">Correct Answer: Queue</div>
+                <div class="explanation">Queue uses FIFO, while Stack uses LIFO (Last-In-First-Out).</div>
+              </div>
+            </div>
+            
+            <!-- Personalized Learning Path -->
+            <div class="learning-path">
+              <h3>Your Learning Path</h3>
+              <div class="path-item">
+                <i class="fas fa-check-circle completed"></i>
+                <span>Review Sorting Algorithms</span>
+              </div>
+              <div class="path-item">
+                <i class="fas fa-arrow-right"></i>
+                <span>Practice Binary Trees</span>
+              </div>
+              <div class="path-item">
+                <i class="fas fa-arrow-right"></i>
+                <span>Study Graph Traversal</span>
+              </div>
+              <div class="path-item">
+                <i class="fas fa-arrow-right"></i>
+                <span>Master Dynamic Programming</span>
+              </div>
             </div>
           </div>
         </div>
@@ -189,7 +265,31 @@
     </div> <!-- End of resultsContent -->
   </div> <!-- End of main-container -->
 
+  <div class="theme-toggle" id="themeToggle">
+    <i class="fas fa-moon"></i>
+  </div>
+
   <!-- Script to populate data dynamically -->
-  <script src="results.js"></script>
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const themeToggle = document.getElementById('themeToggle');
+      themeToggle.addEventListener('click', function() {
+        document.body.classList.toggle('dark-mode');
+        const icon = this.querySelector('i');
+        if (document.body.classList.contains('dark-mode')) {
+          icon.classList.remove('fa-moon');
+          icon.classList.add('fa-sun');
+        } else {
+          icon.classList.remove('fa-sun');
+          icon.classList.add('fa-moon');
+        }
+      });
+      
+      // Show results for demo purposes
+      document.getElementById('emptyResults').style.display = 'none';
+      document.getElementById('resultsContainer').style.display = 'block';
+    });
+  </script>
 </body>
 </html>
