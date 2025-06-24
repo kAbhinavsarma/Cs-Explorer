@@ -1,295 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CS Explorer - Results</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS Explorer - Quiz Results</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-  <!-- Navigation -->
   <nav class="navbar">
     <div class="nav-container">
-      <a href="dashboard.html" class="nav-brand">
-        <i class="fas fa-code"></i>
-        CS Explorer
-      </a>
+      <a href="index.html" class="nav-brand">CS Explorer</a>
       <div class="nav-links">
-        <a href="dashboard.html" class="nav-link">
-          <i class="fas fa-tachometer-alt"></i>
-          Dashboard
-        </a>
-        <a href="quiz.html" class="nav-link">
-          <i class="fas fa-question-circle"></i>
-          Quiz
-        </a>
-        <a href="results.html" class="nav-link active">
-          <i class="fas fa-chart-line"></i>
-          Results
-        </a>
-        <a href="index.html" class="nav-link">
-          <i class="fas fa-sign-out-alt"></i>
-          Logout
-        </a>
+        <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="quiz.html"><i class="fas fa-question-circle"></i> Quiz</a>
+      </div>
+      <div id="themeToggle">
+        <i class="fas fa-moon"></i>
       </div>
     </div>
   </nav>
 
-  <div class="main-container">
-    <div class="page-header">
-      <h1 class="page-title">Quiz Results</h1>
-      <p class="page-subtitle">See how you performed and get personalized recommendations</p>
+  <main class="main-container">
+    <div class="card">
+      <h1>Quiz Results</h1>
+      <div id="resultsContent"></div>
     </div>
 
-    <div id="resultsContent">
-      <!-- Default state when no results available -->
-      <div class="empty-results" id="emptyResults">
-        <div class="empty-state">
-          <i class="fas fa-clipboard-list"></i>
-          <h3>No Quiz Results Yet</h3>
-          <p>Take your first quiz to see your results and performance analytics!</p>
-          <a href="quiz.html" class="btn btn-primary btn-lg">
-            <i class="fas fa-play"></i>
-            Start First Quiz
-          </a>
-        </div>
-      </div>
+    <div class="card">
+      <h2>Topic Performance</h2>
+      <div id="topicPerformance"></div>
+    </div>
 
-      <!-- Results will be dynamically loaded here -->
-      <div class="results-container" id="resultsContainer" style="display: none;">
-        <!-- Score Summary Card -->
-        <div class="results-summary" id="scoreSummary">
-          <div class="score-icon">
-            <i class="fas fa-trophy"></i>
-          </div>
-          <div class="score-content">
-            <h2>Quiz Complete!</h2>
-            <div class="score-display">
-              <span class="score-number" id="scoreNumber">0</span>
-              <span class="score-total">/ <span id="scoreTotal">0</span></span>
-            </div>
-            <div class="score-percentage" id="scorePercentage">0%</div>
-            <div class="score-grade" id="scoreGrade">Grade: A</div>
-            
-            <!-- Performance Comparison -->
-            <div class="performance-comparison">
-              <div class="comparison-item">
-                <span>Your Score</span>
-                <div class="comparison-value">78%</div>
-              </div>
-              <div class="comparison-item">
-                <span>Class Average</span>
-                <div class="comparison-value">65%</div>
-              </div>
-              <div class="comparison-item">
-                <span>Improvement</span>
-                <div class="comparison-value positive">+13%</div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div class="card">
+      <h2>Recommendations</h2>
+      <div id="recommendations"></div>
+    </div>
 
-        <!-- Performance Analysis -->
-        <div class="analysis-grid">
-          <!-- Topic Performance -->
-          <div class="card">
-            <div class="card-header">
-              <div class="card-icon">
-                <i class="fas fa-chart-pie"></i>
-              </div>
-              <div class="card-title-section">
-                <h3 class="card-title">Topic Performance</h3>
-                <p class="card-subtitle">How you performed in each topic</p>
-              </div>
-            </div>
-            <div class="card-content">
-              <div id="topicPerformance">
-                <div class="topic-performance-item">
-                  <span>Algorithms</span>
-                  <span>70%</span>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 70%"></div>
-                  </div>
-                </div>
-                <div class="topic-performance-item">
-                  <span>Data Structures</span>
-                  <span>85%</span>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 85%"></div>
-                  </div>
-                </div>
-                <div class="topic-performance-item">
-                  <span>Operating Systems</span>
-                  <span>50%</span>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 50%"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+    <div class="card">
+      <h2>Time Analysis</h2>
+      <div id="timeAnalysis"></div>
+    </div>
 
-          <!-- Recommendations -->
-          <div class="card">
-            <div class="card-header">
-              <div class="card-icon warning">
-                <i class="fas fa-lightbulb"></i>
-              </div>
-              <div class="card-title-section">
-                <h3 class="card-title">Recommendations</h3>
-                <p class="card-subtitle">Areas to focus on for improvement</p>
-              </div>
-            </div>
-            <div class="card-content">
-              <div id="recommendations">
-                <ul>
-                  <li>Review sorting algorithms (Bubble, Merge, Quick)</li>
-                  <li>Practice tree traversal techniques</li>
-                  <li>Study process scheduling algorithms</li>
-                </ul>
-              </div>
-            </div>
-          </div>
+    <div class="card">
+      <h2>Earned Achievements</h2>
+      <div id="achievementProgress"></div>
+    </div>
 
-          <!-- Time Analysis -->
-          <div class="card">
-            <div class="card-header">
-              <div class="card-icon info">
-                <i class="fas fa-clock"></i>
-              </div>
-              <div class="card-title-section">
-                <h3 class="card-title">Time Analysis</h3>
-                <p class="card-subtitle">How you managed your time</p>
-              </div>
-            </div>
-            <div class="card-content">
-              <div id="timeAnalysis">
-                <div class="time-stat">
-                  <span class="time-label">Total Time:</span>
-                  <span class="time-value" id="totalTime">8:24</span>
-                </div>
-                <div class="time-stat">
-                  <span class="time-label">Average per Question:</span>
-                  <span class="time-value" id="avgTime">1:41</span>
-                </div>
-                <div class="time-stat">
-                  <span class="time-label">Time Remaining:</span>
-                  <span class="time-value" id="timeRemaining">1:36</span>
-                </div>
-              </div>
-            </div>
-          </div>
+    <div class="card">
+      <h2>Question Review</h2>
+      <div id="questionReview"></div>
+    </div>
 
-          <!-- Achievement Progress -->
-          <div class="card">
-            <div class="card-header">
-              <div class="card-icon success">
-                <i class="fas fa-medal"></i>
-              </div>
-              <div class="card-title-section">
-                <h3 class="card-title">Achievement Progress</h3>
-                <p class="card-subtitle">Badges earned and progress made</p>
-              </div>
-            </div>
-            <div class="card-content">
-              <div id="achievementProgress">
-                <div class="achievement-item">
-                  <span>Algorithm Master</span>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 70%"></div>
-                  </div>
-                  <span>70% complete</span>
-                </div>
-                <div class="achievement-item">
-                  <span>Quick Thinker</span>
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 40%"></div>
-                  </div>
-                  <span>40% complete</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div class="card">
+      <h2>Learning Path</h2>
+      <div id="learningPath"></div>
+    </div>
 
-        <!-- Detailed Question Review -->
-        <div class="card question-review-card">
-          <div class="card-header">
-            <div class="card-icon">
-              <i class="fas fa-list-alt"></i>
-            </div>
-            <div class="card-title-section">
-              <h3 class="card-title">Question Review</h3>
-              <p class="card-subtitle">Review your answers and explanations</p>
-            </div>
-          </div>
-          <div class="card-content">
-            <div id="questionReview">
-              <div class="question-block">
-                <div class="question-text"><b>Q1:</b> What is the time complexity of Bubble Sort in the worst case?</div>
-                <div class="user-answer correct">Your Answer: O(n²)</div>
-                <div class="explanation">Correct! Bubble Sort has O(n²) time complexity in worst case.</div>
-              </div>
-              <div class="question-block">
-                <div class="question-text"><b>Q2:</b> Which data structure uses FIFO (First-In-First-Out) principle?</div>
-                <div class="user-answer incorrect">Your Answer: Stack</div>
-                <div class="correct-answer">Correct Answer: Queue</div>
-                <div class="explanation">Queue uses FIFO, while Stack uses LIFO (Last-In-First-Out).</div>
-              </div>
-            </div>
-            
-            <!-- Personalized Learning Path -->
-            <div class="learning-path">
-              <h3>Your Learning Path</h3>
-              <div class="path-item">
-                <i class="fas fa-check-circle completed"></i>
-                <span>Review Sorting Algorithms</span>
-              </div>
-              <div class="path-item">
-                <i class="fas fa-arrow-right"></i>
-                <span>Practice Binary Trees</span>
-              </div>
-              <div class="path-item">
-                <i class="fas fa-arrow-right"></i>
-                <span>Study Graph Traversal</span>
-              </div>
-              <div class="path-item">
-                <i class="fas fa-arrow-right"></i>
-                <span>Master Dynamic Programming</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> <!-- End of resultsContainer -->
-    </div> <!-- End of resultsContent -->
-  </div> <!-- End of main-container -->
+    <div class="action-buttons">
+      <a href="quiz.html" class="btn btn-primary">Take Another Quiz</a>
+      <a href="dashboard.html" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+  </main>
 
-  <div class="theme-toggle" id="themeToggle">
-    <i class="fas fa-moon"></i>
-  </div>
+  <footer class="footer">
+    <p>© 2025 CS Explorer. All rights reserved.</p>
+  </footer>
 
-  <!-- Script to populate data dynamically -->
   <script src="script.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const themeToggle = document.getElementById('themeToggle');
-      themeToggle.addEventListener('click', function() {
-        document.body.classList.toggle('dark-mode');
-        const icon = this.querySelector('i');
-        if (document.body.classList.contains('dark-mode')) {
-          icon.classList.remove('fa-moon');
-          icon.classList.add('fa-sun');
-        } else {
-          icon.classList.remove('fa-sun');
-          icon.classList.add('fa-moon');
-        }
-      });
-      
-      // Show results for demo purposes
-      document.getElementById('emptyResults').style.display = 'none';
-      document.getElementById('resultsContainer').style.display = 'block';
-    });
-  </script>
 </body>
 </html>

@@ -5,506 +5,81 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CS Explorer - Dashboard</title>
   <link rel="stylesheet" href="styles.css">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-  <!-- Navigation -->
   <nav class="navbar">
     <div class="nav-container">
-      <a href="dashboard.html" class="nav-brand">
-        <i class="fas fa-code"></i>
-        <span>CS Explorer</span>
-      </a>
+      <a href="index.html" class="nav-brand">CS Explorer</a>
       <div class="nav-links">
-        <a href="dashboard.html" class="nav-link active">
-          <i class="fas fa-tachometer-alt"></i>
-          <span>Dashboard</span>
-        </a>
-        <a href="quiz.html" class="nav-link">
-          <i class="fas fa-question-circle"></i>
-          <span>Quiz</span>
-        </a>
-        <a href="results.html" class="nav-link">
-          <i class="fas fa-chart-line"></i>
-          <span>Results</span>
-        </a>
-        <a href="index.html" class="nav-link">
-          <i class="fas fa-sign-out-alt"></i>
-          <span>Logout</span>
-        </a>
+        <a href="dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="quiz.html"><i class="fas fa-question-circle"></i> Quiz</a>
+      </div>
+      <div id="themeToggle">
+        <i class="fas fa-moon"></i>
       </div>
     </div>
   </nav>
 
-  <div class="main-container">
+  <main class="main-container">
     <div class="page-header">
-      <h1 class="page-title">Dashboard</h1>
+      <h1 class="page-title">My Dashboard</h1>
       <p class="page-subtitle">Track your progress and continue learning</p>
     </div>
 
-    <!-- Welcome Banner -->
-    <div class="card welcome-banner">
-      <div class="welcome-content">
-        <h2>Welcome back, <span id="usernameDisplay">Student</span>! 👋</h2>
-        <p>Ready to continue your computer science journey?</p>
-        <div class="user-stats">
-          <div class="stat-item">
-            <span class="stat-value" id="userStreak">0</span>
-            <span class="stat-label">Day Streak</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value" id="userLevel">1</span>
-            <span class="stat-label">Level</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value" id="userXP">0</span>
-            <span class="stat-label">XP</span>
-          </div>
-        </div>
-        
-        <!-- Streak Indicator -->
-        <div class="streak-indicator">
-          <div class="streak-day active">M</div>
-          <div class="streak-day active">T</div>
-          <div class="streak-day active">W</div>
-          <div class="streak-day">T</div>
-          <div class="streak-day">F</div>
-          <div class="streak-day">S</div>
-          <div class="streak-day">S</div>
-        </div>
-      </div>
-      <div class="welcome-action">
-        <a href="quiz.html" class="btn btn-primary btn-lg pulse">
-          <i class="fas fa-play"></i>
-          Start Quiz
-        </a>
-      </div>
-    </div>
-
-    <!-- Stats Grid -->
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-icon">
-          <i class="fas fa-clipboard-list"></i>
-        </div>
-        <div class="stat-content">
-          <div class="stat-number" id="totalQuizzes">0</div>
-          <div class="stat-label">Quizzes Completed</div>
-        </div>
+        <div class="stat-icon"><i class="fas fa-clipboard-check"></i></div>
+        <div id="quizzesCompleted" class="stat-value">0</div>
+        <div class="stat-label">Quizzes Completed</div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">
-          <i class="fas fa-percentage"></i>
-        </div>
-        <div class="stat-content">
-          <div class="stat-number" id="averageScore">0%</div>
-          <div class="stat-label">Average Score</div>
-        </div>
+        <div class="stat-icon"><i class="fas fa-star"></i></div>
+        <div id="averageScore" class="stat-value">0%</div>
+        <div class="stat-label">Average Score</div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">
-          <i class="fas fa-trophy"></i>
-        </div>
-        <div class="stat-content">
-          <div class="stat-number" id="badgesEarned">0</div>
-          <div class="stat-label">Badges Earned</div>
-        </div>
+        <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+        <div id="badgesEarned" class="stat-value">0</div>
+        <div class="stat-label">Badges Earned</div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">
-          <i class="fas fa-clock"></i>
-        </div>
-        <div class="stat-content">
-          <div class="stat-number" id="totalTime">0h</div>
-          <div class="stat-label">Time Practiced</div>
-        </div>
+        <div class="stat-icon"><i class="fas fa-clock"></i></div>
+        <div id="timePracticed" class="stat-value">0h</div>
+        <div class="stat-label">Time Practiced</div>
       </div>
     </div>
 
-    <!-- Main Content Grid -->
-    <div class="dashboard-grid">
-      <!-- Progress Chart -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon">
-            <i class="fas fa-chart-line"></i>
-          </div>
-          <div class="card-title-section">
-            <h3 class="card-title">Your Learning Progress</h3>
-            <p class="card-subtitle">Performance over time</p>
-          </div>
-        </div>
-        <div class="card-content">
-          <canvas id="progressChart" height="250"></canvas>
-        </div>
-      </div>
-
-      <!-- Topic Mastery -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon">
-            <i class="fas fa-star"></i>
-          </div>
-          <div class="card-title-section">
-            <h3 class="card-title">Topic Mastery</h3>
-            <p class="card-subtitle">Your proficiency in each topic</p>
-          </div>
-        </div>
-        <div class="card-content">
-          <div class="mastery-container">
-            <div class="mastery-item">
-              <div class="mastery-header">
-                <span>Algorithms</span>
-                <span>65%</span>
-              </div>
-              <div class="mastery-meter">
-                <div class="mastery-fill" style="width: 65%"></div>
-              </div>
-            </div>
-            <div class="mastery-item">
-              <div class="mastery-header">
-                <span>Data Structures</span>
-                <span>80%</span>
-              </div>
-              <div class="mastery-meter">
-                <div class="mastery-fill" style="width: 80%"></div>
-              </div>
-            </div>
-            <div class="mastery-item">
-              <div class="mastery-header">
-                <span>Operating Systems</span>
-                <span>45%</span>
-              </div>
-              <div class="mastery-meter">
-                <div class="mastery-fill" style="width: 45%"></div>
-              </div>
-            </div>
-            <div class="mastery-item">
-              <div class="mastery-header">
-                <span>Networking</span>
-                <span>70%</span>
-              </div>
-              <div class="mastery-meter">
-                <div class="mastery-fill" style="width: 70%"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Weak Topics -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon warning">
-            <i class="fas fa-exclamation-triangle"></i>
-          </div>
-          <div class="card-title-section">
-            <h3 class="card-title">Focus Areas</h3>
-            <p class="card-subtitle">Topics that need more practice</p>
-          </div>
-        </div>
-        <div class="card-content">
-          <div id="weakTopicsList" class="topics-list">
-            <div class="loading-spinner"></div>
-          </div>
-          <a href="quiz.html" class="btn btn-secondary" style="margin-top: 1rem;">
-            <i class="fas fa-book"></i>
-            Practice Weak Topics
-          </a>
-        </div>
-      </div>
-
-      <!-- Recent Activity -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon info">
-            <i class="fas fa-history"></i>
-          </div>
-          <div class="card-title-section">
-            <h3 class="card-title">Recent Activity</h3>
-            <p class="card-subtitle">Your latest quiz attempts</p>
-          </div>
-        </div>
-        <div class="card-content">
-          <div id="recentActivity">
-            <div class="activity-item loading">
-              <div class="activity-content">
-                <div class="activity-text"></div>
-                <div class="activity-meta"></div>
-              </div>
-            </div>
-          </div>
-          <a href="results.html" class="btn btn-secondary" style="margin-top: 1rem;">
-            <i class="fas fa-list"></i>
-            View All Results
-          </a>
-        </div>
-      </div>
-
-      <!-- Achievements -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon success">
-            <i class="fas fa-medal"></i>
-          </div>
-          <div class="card-title-section">
-            <h3 class="card-title">Recent Achievements</h3>
-            <p class="card-subtitle">Badges you've earned</p>
-          </div>
-        </div>
-        <div class="card-content">
-          <div class="badges-grid" id="recentBadges">
-            <div class="badge earned">
-              <i class="fas fa-medal"></i>
-              <h4>Quick Learner</h4>
-              <p>Completed 5 quizzes in one week</p>
-            </div>
-            <div class="badge earned">
-              <i class="fas fa-trophy"></i>
-              <h4>Topic Master</h4>
-              <p>Scored 90% on a Databases quiz</p>
-            </div>
-            <div class="badge locked">
-              <i class="fas fa-star"></i>
-              <h4>Perfect Score</h4>
-              <p>Got 100% on a quiz</p>
-            </div>
-          </div>
-          <a href="profile.html#achievements" class="btn btn-secondary" style="margin-top: 1rem;">
-            <i class="fas fa-trophy"></i>
-            View All Badges
-          </a>
-        </div>
-      </div>
-
-      <!-- Recommended Quizzes -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon primary">
-            <i class="fas fa-lightbulb"></i>
-          </div>
-          <div class="card-title-section">
-            <h3 class="card-title">Recommended For You</h3>
-            <p class="card-subtitle">Quizzes tailored to your needs</p>
-          </div>
-        </div>
-        <div class="card-content">
-          <div id="recommendedQuizzes" class="quiz-list">
-            <div class="quiz-item">
-              <div class="quiz-topic">Algorithms</div>
-              <div class="quiz-difficulty">Intermediate</div>
-              <a href="quiz.html?topic=Algorithms" class="btn btn-sm btn-primary">
-                Start
-              </a>
-            </div>
-            <div class="quiz-item">
-              <div class="quiz-topic">Data Structures</div>
-              <div class="quiz-difficulty">Beginner</div>
-              <a href="quiz.html?topic=Data+Structures" class="btn btn-sm btn-primary">
-                Start
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="card">
+      <h2>Topic Mastery</h2>
+      <div id="topicMastery"></div>
     </div>
 
-    <!-- Daily Goal -->
-    <div class="card daily-goal">
-      <div class="goal-content">
-        <h3>Daily Learning Goal</h3>
-        <p>Complete at least one quiz per day to maintain your streak!</p>
-        <div class="progress-container">
-          <div class="progress-bar">
-            <div class="progress-fill" id="dailyGoalProgress" style="width: 0%"></div>
-          </div>
-          <span class="progress-text" id="dailyGoalText">0/1 quizzes today</span>
-        </div>
-      </div>
-      <div class="goal-action">
-        <a href="quiz.html" class="btn btn-success btn-lg">
-          <i class="fas fa-check"></i>
-          Complete Today's Goal
-        </a>
-      </div>
+    <div class="card">
+      <h2>Focus Areas</h2>
+      <div id="recommendations"></div>
     </div>
-  </div>
 
-  <div class="theme-toggle" id="themeToggle">
-    <i class="fas fa-moon"></i>
-  </div>
+    <div class="card">
+      <h2>Recent Activity</h2>
+      <div id="recentActivity"></div>
+    </div>
+
+    <div class="card">
+      <h2>Recent Achievements</h2>
+      <div id="recentAchievements"></div>
+    </div>
+
+    <div class="card">
+      <h2>Learning Streak</h2>
+      <div id="streakContainer" class="streak-container"></div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© 2025 CS Explorer. All rights reserved.</p>
+  </footer>
 
   <script src="script.js"></script>
-  <script>
-    // Dashboard-specific JavaScript
-    document.addEventListener('DOMContentLoaded', function() {
-      // Check if user is logged in
-      const userId = localStorage.getItem('userId');
-      const username = localStorage.getItem('username');
-      
-      if (!userId || !username) {
-        window.location.href = 'index.html';
-        return;
-      }
-      
-      // Display username
-      document.getElementById('usernameDisplay').textContent = username;
-      
-      // Load dashboard data
-      loadDashboardData(userId);
-      
-      // Initialize charts
-      initializeCharts();
-      
-      // Theme toggle
-      const themeToggle = document.getElementById('themeToggle');
-      themeToggle.addEventListener('click', function() {
-        document.body.classList.toggle('dark-mode');
-        const icon = this.querySelector('i');
-        if (document.body.classList.contains('dark-mode')) {
-          icon.classList.remove('fa-moon');
-          icon.classList.add('fa-sun');
-        } else {
-          icon.classList.remove('fa-sun');
-          icon.classList.add('fa-moon');
-        }
-      });
-    });
-    
-    function loadDashboardData(userId) {
-      // Mock user stats
-      document.getElementById('userStreak').textContent = '5';
-      document.getElementById('userLevel').textContent = '3';
-      document.getElementById('userXP').textContent = '450/600';
-      
-      // Mock stats
-      document.getElementById('totalQuizzes').textContent = '12';
-      document.getElementById('averageScore').textContent = '78%';
-      document.getElementById('badgesEarned').textContent = '5';
-      document.getElementById('totalTime').textContent = '4.5h';
-      
-      // Mock daily goal
-      document.getElementById('dailyGoalProgress').style.width = '50%';
-      document.getElementById('dailyGoalText').textContent = '1/2 quizzes today';
-      
-      // Mock weak topics
-      const weakTopics = [
-        { topic: 'Algorithms', accuracy: '45%', questions: 20 },
-        { topic: 'Operating Systems', accuracy: '52%', questions: 15 }
-      ];
-      
-      const weakTopicsList = document.getElementById('weakTopicsList');
-      weakTopicsList.innerHTML = '';
-      
-      weakTopics.forEach(topic => {
-        const topicEl = document.createElement('div');
-        topicEl.className = 'topic-item';
-        topicEl.innerHTML = `
-          <div class="topic-name">${topic.topic}</div>
-          <div class="topic-accuracy">${topic.accuracy} accuracy</div>
-          <div class="topic-progress">
-            <div class="progress-bar">
-              <div class="progress-fill" style="width: ${topic.accuracy}"></div>
-            </div>
-          </div>
-        `;
-        weakTopicsList.appendChild(topicEl);
-      });
-      
-      // Mock recent activity
-      const recentActivity = [
-        { date: 'Today', topic: 'Data Structures', score: '8/10', time: '12:45' },
-        { date: 'Yesterday', topic: 'Networking', score: '6/10', time: '09:30' },
-        { date: '2 days ago', topic: 'Algorithms', score: '7/10', time: '15:20' }
-      ];
-      
-      const activityList = document.getElementById('recentActivity');
-      activityList.innerHTML = '';
-      
-      recentActivity.forEach(activity => {
-        const activityEl = document.createElement('div');
-        activityEl.className = 'activity-item';
-        activityEl.innerHTML = `
-          <div class="activity-icon">
-            <i class="fas fa-question-circle"></i>
-          </div>
-          <div class="activity-content">
-            <div class="activity-text">${activity.topic} Quiz</div>
-            <div class="activity-meta">
-              <span>${activity.score}</span>
-              <span>•</span>
-              <span>${activity.date} at ${activity.time}</span>
-            </div>
-          </div>
-        `;
-        activityList.appendChild(activityEl);
-      });
-    }
-    
-    function initializeCharts() {
-      // Progress Chart
-      const progressCtx = document.getElementById('progressChart').getContext('2d');
-      const progressChart = new Chart(progressCtx, {
-        type: 'line',
-        data: {
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-          datasets: [{
-            label: 'Average Score',
-            data: [55, 60, 65, 70, 75, 78],
-            borderColor: '#3498db',
-            backgroundColor: 'rgba(52, 152, 219, 0.1)',
-            tension: 0.3,
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: 'top',
-            }
-          },
-          scales: {
-            y: {
-              min: 0,
-              max: 100
-            }
-          }
-        }
-      });
-      
-      // Topic Chart
-      const topicCtx = document.getElementById('topicChart').getContext('2d');
-      const topicChart = new Chart(topicCtx, {
-        type: 'radar',
-        data: {
-          labels: ['Algorithms', 'Data Structures', 'Databases', 'Networking', 'OS'],
-          datasets: [{
-            label: 'Your Proficiency',
-            data: [45, 75, 68, 82, 60],
-            backgroundColor: 'rgba(46, 204, 113, 0.2)',
-            borderColor: '#2ecc71',
-            pointBackgroundColor: '#2ecc71',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: '#2ecc71'
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            r: {
-              angleLines: {
-                display: true
-              },
-              suggestedMin: 0,
-              suggestedMax: 100
-            }
-          }
-        }
-      });
-    }
-  </script>
 </body>
 </html>

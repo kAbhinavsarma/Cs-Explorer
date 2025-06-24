@@ -31,7 +31,7 @@ router.post('/register', async (req, res) => {
         // Hash password
         const salt = await bcrypt.genSalt(10);
         const password_hash = await bcrypt.hash(password, salt);
-
+        userWeakTopics[userId] = [];
         // Insert user into DB
         db.run(
           'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)',
@@ -81,7 +81,45 @@ router.post('/login', async (req, res) => {
           return res.status(400).json({ error: 'Invalid credentials' });
         }
 
-        res.json({ message: 'Login successful', userId: user.id, username: user.username });
+        // Update streak
+        const today = new Date().toISOString().split('T')[0];
+        const lastActive = user.last_active || today;
+        let streak = user.streak_days || 0;
+        
+        if (lastActive === today) {
+          // Already active today, streak remains the same
+        } else {
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+          const yesterdayStr = yesterday.toISOString().split('T')[0];
+          
+          if (lastActive === yesterdayStr) {
+            streak = streak + 1;
+          } else {
+            streak = 1; // Reset streak if not consecutive
+          }
+        }
+         if (!userWeakTopics[user.id]) {
+          userWeakTopics[user.id] = [];
+        }
+
+        // Update user's streak and last active
+        db.run(
+          'UPDATE users SET last_active = ?, streak_days = ? WHERE id = ?',
+          [today, streak, user.id],
+          (err) => {
+            if (err) {
+              console.error('Update streak error:', err);
+              // We still log in the user even if streak update fails
+            }
+            res.json({ 
+              message: 'Login successful', 
+              userId: user.id, 
+              username: user.username,
+              streak
+            });
+          }
+        );
       }
     );
   } catch (error) {

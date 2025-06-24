@@ -6,7 +6,9 @@ db.serialize(() => {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
     email TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL
+    password_hash TEXT NOT NULL,
+    last_active DATE DEFAULT CURRENT_DATE,
+    streak_days INTEGER DEFAULT 0
   )`);
 
   db.run(`CREATE TABLE IF NOT EXISTS questions (
@@ -17,14 +19,18 @@ db.serialize(() => {
     option_c TEXT NOT NULL,
     option_d TEXT NOT NULL,
     correct_option TEXT NOT NULL,
-    topic TEXT NOT NULL
+    topic TEXT NOT NULL,
+    explanation TEXT
   )`);
 
   db.run(`CREATE TABLE IF NOT EXISTS quiz_attempts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     start_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    end_time DATETIME,
+    time_taken INTEGER,
     score INTEGER,
+    total_questions INTEGER,
     FOREIGN KEY (user_id) REFERENCES users(id)
   )`);
 

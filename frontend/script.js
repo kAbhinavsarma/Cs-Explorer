@@ -1,5 +1,5 @@
-document.addEventListener('DOMContentLoaded', function () {
-  // Theme toggle functionality
+document.addEventListener('DOMContentLoaded', function() {
+  // Theme toggle
   const themeToggle = document.getElementById('themeToggle');
   if (themeToggle) {
     themeToggle.addEventListener('click', function() {
@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.setItem('theme', 'light');
       }
     });
-    
     // Apply saved theme
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
@@ -24,31 +23,28 @@ document.addEventListener('DOMContentLoaded', function () {
       themeToggle.querySelector('i').classList.add('fa-sun');
     }
   }
-  
-  // Login
+
+  // Login form
   const loginForm = document.getElementById('loginForm');
   if (loginForm) {
-    loginForm.addEventListener('submit', async function (e) {
+    loginForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       showLoading();
       const username = document.getElementById('loginUsername').value;
       const password = document.getElementById('loginPassword').value;
-
       try {
         const response = await fetch('http://localhost:5000/api/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password })
         });
-        
         const data = await response.json();
         if (response.ok) {
           showFeedback('Login successful! Redirecting...', false);
           localStorage.setItem('userId', data.userId);
           localStorage.setItem('username', data.username);
-          setTimeout(() => {
-            window.location.href = 'dashboard.html';
-          }, 1500);
+          localStorage.setItem('streak', data.streak);
+          setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
         } else {
           showFeedback(data.error || 'Login failed', true);
         }
@@ -60,23 +56,21 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Signup
+  // Signup form
   const signupForm = document.getElementById('signupForm');
   if (signupForm) {
-    signupForm.addEventListener('submit', async function (e) {
+    signupForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       showLoading();
       const username = document.getElementById('signupUsername').value;
       const email = document.getElementById('signupEmail').value;
       const password = document.getElementById('signupPassword').value;
-
       try {
         const response = await fetch('http://localhost:5000/api/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, email, password })
         });
-        
         const data = await response.json();
         if (response.ok) {
           showFeedback('Signup successful! Please log in.', false);
@@ -92,245 +86,489 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   }
-});
 
-// Only run quiz logic on quiz.html
-if (window.location.pathname.endsWith('quiz.html')) {
-  const quizContent = document.getElementById('quizContent');
-  const submitBtn = document.getElementById('submitQuizBtn');
-  let questions = [];
-  let userAnswers = {};
+  // Quiz logic
+  if (window.location.pathname.endsWith('quiz.html')) {
+    const quizContent = document.getElementById('quizContent');
+    const submitBtn = document.getElementById('submitQuizBtn');
+    const quizTimer = document.getElementById('quizTimer');
+    const timerProgress = document.querySelector('.timer-progress .progress-fill');
+    const questionShortcuts = document.getElementById('questionShortcuts');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const currentQuestionSpan = document.getElementById('currentQuestion');
+    const totalQuestionsSpan = document.getElementById('totalQuestions');
+    let questions = [];
+    let userAnswers = {};
+    let currentQuestion = 0;
+    let timeLeft = 600; // 10 minutes in seconds
+    let timer;
 
-  // Fetch questions from backend
-  async function loadQuestions() {
-    showLoading();
-    try {
-      const userId = localStorage.getItem('userId');
-      const response = await fetch('http://localhost:5000/api/questions');
-      questions = await response.json();
-      displayQuestions();
-    } catch (error) {
-      quizContent.innerHTML = '<p class="error">Failed to load questions. Please try again later.</p>';
-    } finally {
-      hideLoading();
-    }
-  }
-
-  // Display questions and options
-  function displayQuestions() {
-    quizContent.innerHTML = '';
-    questions.forEach((q, idx) => {
-      const qDiv = document.createElement('div');
-      qDiv.className = 'quiz-question';
-      qDiv.innerHTML = `
-        <p><b>Q${idx + 1}:</b> ${q.question_text}</p>
-        <label><input type="radio" name="q${q.id}" value="A"> ${q.option_a}</label><br>
-        <label><input type="radio" name="q${q.id}" value="B"> ${q.option_b}</label><br>
-        <label><input type="radio" name="q${q.id}" value="C"> ${q.option_c}</label><br>
-        <label><input type="radio" name="q${q.id}" value="D"> ${q.option_d}</label>
-        <hr>
-      `;
-      quizContent.appendChild(qDiv);
-    });
-    
-    // Show navigation
-    document.getElementById('quizNavigation').style.display = 'block';
-    
-    // Create question indicators
-    const indicators = document.getElementById('questionIndicators');
-    indicators.innerHTML = '';
-    for (let i = 0; i < questions.length; i++) {
-      const btn = document.createElement('button');
-      btn.className = 'shortcut-btn';
-      btn.textContent = i + 1;
-      btn.onclick = () => jumpToQuestion(i);
-      indicators.appendChild(btn);
-    }
-    
-    // Update progress
-    totalQuestionsCount = questions.length;
-    document.getElementById('totalQuestions').textContent = totalQuestionsCount;
-    updateProgress();
-    
     // Start timer
-    startTimer();
-  }
+    timer = setInterval(updateTimer, 1000);
 
-  // Collect answers and submit
-  submitBtn.onclick = async function () {
-    showLoading();
-    userAnswers = {};
-    questions.forEach(q => {
-      const selected = document.querySelector(`input[name="q${q.id}"]:checked`);
-      userAnswers[q.id] = selected ? selected.value : null;
-    });
+    // Load questions
+    loadQuestions();
 
-    // Prepare answer array for backend
-    const answersArr = questions.map(q => ({
-      questionId: q.id,
-      selectedOption: userAnswers[q.id]
-    }));
-
-    try {
-      // Send to backend
-      const response = await fetch('http://localhost:5000/api/submit-quiz', {
+    async function loadQuestions() {
+      quizContent.innerHTML = '<div class="quiz-loading">Loading questions...</div>';
+  const userId = localStorage.getItem('userId');
+  
+  try {
+    let response;
+    if (userId) {
+      // Fetch adaptive questions for logged-in users
+      response = await fetch('http://localhost:5000/api/adaptive-questions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: localStorage.getItem('userId'),
-          answers: answersArr
-        })
+        body: JSON.stringify({ userId })
       });
-      
-      const result = await response.json();
-      if (response.ok) {
-        // Save result for results page
-        localStorage.setItem('lastQuizResult', JSON.stringify(result));
-        
-        // Show confetti for good performance
-        if (result.score / result.total >= 0.8) {
-          showConfetti();
-        }
-        
-        // Redirect to results page
-        window.location.href = 'results.html';
-      } else {
-        showFeedback('Failed to submit quiz. Please try again.', true);
-      }
-    } catch (error) {
-      showFeedback('Network error. Please try again.', true);
-    } finally {
-      hideLoading();
+    } else {
+      // Fetch random questions for guests
+      response = await fetch('http://localhost:5000/api/questions');
     }
-  };
-
-  // Load questions on page load
-  loadQuestions();
-}
-
-// Only run results logic on results.html
-if (window.location.pathname.endsWith('results.html')) {
-  const resultsContent = document.getElementById('resultsContent');
-
-  // Get last quiz result from localStorage (set after quiz submission)
-  const lastQuizResult = localStorage.getItem('lastQuizResult');
-  if (!lastQuizResult) {
-    resultsContent.innerHTML = '<p>No recent quiz found. <a href="quiz.html">Take a quiz!</a></p>';
-  } else {
-    const result = JSON.parse(lastQuizResult);
-
-    // Show score and summary
-    let html = `<h2>Your Score: ${result.score} / ${result.total}</h2>`;
-
-    // Show topic performance if available
-    if (result.topicPerformance) {
-      html += '<h3>Performance by Topic:</h3><ul>';
-      for (const topic in result.topicPerformance) {
-        const perf = result.topicPerformance[topic];
-        const percent = ((perf.correct / perf.total) * 100).toFixed(1);
-        html += `<li><b>${topic}:</b> ${perf.correct} / ${perf.total} correct (${percent}%)</li>`;
-      }
-      html += '</ul>';
-    }
-
-    // Recommendations (show topics with <70% accuracy)
-    if (result.topicPerformance) {
-      const weakTopics = Object.entries(result.topicPerformance)
-        .filter(([topic, perf]) => perf.correct / perf.total < 0.7)
-        .map(([topic]) => topic);
-      if (weakTopics.length > 0) {
-        html += `<p><b>Recommended for practice:</b> ${weakTopics.join(', ')}</p>`;
-      } else {
-        html += `<p><b>Great job! No weak topics detected.</b></p>`;
-      }
-    }
-
-    html += `<button onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
-             <button onclick="window.location.href='quiz.html'">Practice Again</button>`;
-
-    resultsContent.innerHTML = html;
-  }
-}
-
-// Only run dashboard logic on dashboard.html
-if (window.location.pathname.endsWith('dashboard.html')) {
-  const dashboardContent = document.getElementById('dashboardContent');
-  const userId = localStorage.getItem('userId');
-
-  async function loadDashboard() {
-    if (!userId) {
-      dashboardContent.innerHTML = '<p>Please log in to view your dashboard.</p>';
+    
+    questions = await response.json();
+    
+    if (questions.length === 0) {
+      quizContent.innerHTML = '<div class="quiz-loading">No questions found. Please try again later.</div>';
       return;
     }
-
-    // Fetch weak topics
-    const weakRes = await fetch(`http://localhost:5000/api/user-weak-topics/${userId}`);
-    const weakData = await weakRes.json();
-
-    // Fetch quiz history
-    let quizHistory = [];
-    try {
-      const histRes = await fetch(`http://localhost:5000/api/user-history/${userId}`);
-      quizHistory = await histRes.json();
-    } catch (e) {
-      // If not implemented, skip
-    }
-
-    let html = `<h2>Your Dashboard</h2>`;
-
-    // Show weak topics
-    if (weakData.topics && weakData.topics.length > 0) {
-      html += '<h3>Your Weakest Topics:</h3><ul>';
-      weakData.topics.forEach(topic => {
-        const percent = ((topic.correct / topic.total) * 100).toFixed(1);
-        html += `<li><b>${topic.topic}:</b> ${topic.correct} / ${topic.total} correct (${percent}%)</li>`;
-      });
-      html += '</ul>';
-    } else {
-      html += '<p>No weak topics detected yet. Keep practicing!</p>';
-    }
-
-    // Show quiz history
-    if (quizHistory.length > 0) {
-      html += '<h3>Quiz History:</h3><ul>';
-      quizHistory.forEach(q => {
-        html += `<li>Score: ${q.score}, Date: ${new Date(q.start_time).toLocaleString()}</li>`;
-      });
-      html += '</ul>';
-    }
-
-    html += `<button onclick="window.location.href='quiz.html'">Start New Quiz</button>`;
     
-    // Mock badge data
-    const mockBadges = [
-      { name: "First Quiz", earned: true, description: "Completed your first quiz!" },
-      { name: "Topic Master", earned: false, description: "Scored 100% on a topic." },
-      { name: "Practice Streak", earned: true, description: "Quizzed 3 days in a row!" },
-      { name: "High Score", earned: false, description: "Scored 80% or higher on a quiz." }
-    ];
+    displayQuestion(0);
+        // Update progress indicator
+        currentQuestionSpan.textContent = '1';
+        totalQuestionsSpan.textContent = questions.length;
+        // Create question shortcuts
+        questionShortcuts.innerHTML = '';
+        questions.forEach((_, idx) => {
+          const btn = document.createElement('button');
+          btn.className = 'shortcut-btn';
+          btn.textContent = idx + 1;
+          btn.addEventListener('click', () => {
+            currentQuestion = idx;
+            displayQuestion(idx);
+          });
+          questionShortcuts.appendChild(btn);
+        });
+        updateProgress();
+      } catch (error) {
+        quizContent.innerHTML = '<div class="quiz-loading">Failed to load questions. Please try again later.</div>';
+        console.error(error);
+      }
+    }
 
-    let badgesHTML = '';
-    mockBadges.forEach(badge => {
-      badgesHTML += `<div class="badge ${badge.earned ? 'earned' : 'locked'}">
-        <span>${badge.earned ? '🏆' : '🔒'}</span>
-        <strong>${badge.name}</strong>
-        <p>${badge.description}</p>
-      </div>`;
+    function displayQuestion(idx) {
+      if (idx < 0 || idx >= questions.length) return;
+      currentQuestion = idx;
+      // Update progress indicator
+      currentQuestionSpan.textContent = idx + 1;
+      const q = questions[idx];
+      // Highlight active shortcut
+      Array.from(questionShortcuts.children).forEach((btn, i) => {
+        btn.classList.toggle('active', i === idx);
+      });
+      // Update nav buttons
+      prevBtn.disabled = idx === 0;
+      nextBtn.disabled = idx === questions.length - 1;
+      // Render question
+      quizContent.innerHTML = `
+        <div class="quiz-question">
+          <strong>Q${idx + 1}:</strong> ${q.question_text}
+        </div>
+        <div class="options">
+          ${['A', 'B', 'C', 'D'].map(opt => `
+            <label>
+              <input type="radio" name="answer" value="${opt}" ${userAnswers[idx] === opt ? 'checked' : ''}>
+              ${opt}. ${q[`option_${opt.toLowerCase()}`]}
+            </label>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function updateTimer() {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        submitQuiz();
+      }
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      quizTimer.textContent = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+      const progress = (timeLeft / 600) * 100;
+      timerProgress.style.width = `${progress}%`;
+      // Color changes
+      if (timeLeft < 60) {
+        quizTimer.style.color = '#e74c3c';
+        timerProgress.style.background = '#e74c3c';
+      }
+      else if (timeLeft < 120) {
+        quizTimer.style.color = '#f39c12';
+        timerProgress.style.background = '#f39c12';
+      }
+    }
+
+    function updateProgress() {
+      const answered = Object.keys(userAnswers).length;
+      const progress = (answered / questions.length) * 100;
+      // No progress bar in this layout, but you can add one if needed
+    }
+
+    // Save answer on option select
+    quizContent.addEventListener('change', function(e) {
+      if (e.target.name === 'answer') {
+        userAnswers[currentQuestion] = e.target.value;
+        updateProgress();
+      }
     });
 
-    document.getElementById('badgesList').innerHTML = badgesHTML;
+    // Navigation
+    prevBtn.addEventListener('click', () => {
+      if (currentQuestion > 0) displayQuestion(currentQuestion - 1);
+    });
+    nextBtn.addEventListener('click', () => {
+      if (currentQuestion < questions.length - 1) displayQuestion(currentQuestion + 1);
+    });
 
-    dashboardContent.innerHTML = html;
+    // Submit quiz
+    submitBtn.addEventListener('click', submitQuiz);
+
+    async function submitQuiz() {
+      clearInterval(timer);
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        showFeedback('Please log in to submit your quiz.', true);
+        return;
+      }
+      const answers = [];
+      for (let i = 0; i < questions.length; i++) {
+        answers.push({
+          questionId: questions[i].id,
+          selectedOption: userAnswers[i] || ''
+        });
+      }
+      try {
+        const response = await fetch('http://localhost:5000/api/submit-quiz', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, answers })
+        });
+        const result = await response.json();
+        localStorage.setItem('lastQuizResult', JSON.stringify(result));
+        // Redirect to results or dashboard
+        window.location.href = 'results.html';
+      } catch (error) {
+        showFeedback('Failed to submit quiz. Please try again.', true);
+        console.error(error);
+      }
+    }
   }
 
-  loadDashboard();
+  // Dashboard logic
+  if (window.location.pathname.endsWith('dashboard.html')) {
+    updateDashboard();
+  }
+
+  // Results logic
+  if (window.location.pathname.endsWith('results.html')) {
+    const resultsContent = document.getElementById('resultsContent');
+    const lastQuizResult = localStorage.getItem('lastQuizResult');
+    if (!lastQuizResult) {
+      resultsContent.innerHTML = `
+        <div class="no-results">
+          <p>No quiz results found. Take a quiz to see your results!</p>
+          <a href="quiz.html" class="button">Start First Quiz</a>
+        </div>
+      `;
+    } else {
+      const result = JSON.parse(lastQuizResult);
+      resultsContent.innerHTML = `
+        <div class="result-summary">
+          <h2>Quiz Results</h2>
+          <p>Score: ${result.score}/${result.total}</p>
+          <p>Percentage: ${Math.round((result.score / result.total) * 100)}%</p>
+        </div>
+      `;
+      if (result.topicPerformance) {
+      const weakTopics = Object.entries(result.topicPerformance)
+        .filter(([_, stats]) => (stats.correct / stats.total) < 0.7)
+        .map(([topic]) => topic);
+      
+      localStorage.setItem('weakTopics', JSON.stringify(weakTopics));
+    }
+      // Topic performance
+      const topicPerformanceEl = document.getElementById('topicPerformance');
+      if (result.topicPerformance && Object.keys(result.topicPerformance).length > 0) {
+        topicPerformanceEl.innerHTML = Object.entries(result.topicPerformance).map(([topic, stats]) => `
+          <div class="topic-stat">
+            <strong>${topic}:</strong> ${stats.correct}/${stats.total} correct (${Math.round(stats.correct / stats.total * 100)}%)
+          </div>
+        `).join('');
+      } else {
+        topicPerformanceEl.innerHTML = '<p>No topic performance data available.</p>';
+      }
+      
+      // Recommendations
+      const recommendationsEl = document.getElementById('recommendations');
+      if (result.topicPerformance) {
+        const weakTopics = Object.entries(result.topicPerformance)
+          .filter(([_, stats]) => (stats.correct / stats.total) < 0.7)
+          .map(([topic]) => topic);
+          
+        if (weakTopics.length > 0) {
+          recommendationsEl.innerHTML = `
+            <h3>Focus Areas</h3>
+            <ul>
+              ${weakTopics.map(topic => `<li>${topic}</li>`).join('')}
+            </ul>
+            <p>Practice these topics to improve your score!</p>
+          `;
+        } else {
+          recommendationsEl.innerHTML = '<p>Great job! You have no weak areas. Keep up the good work!</p>';
+        }
+      } else {
+        recommendationsEl.innerHTML = '<p>No recommendations available.</p>';
+      }
+      
+      // Time analysis
+      const timeAnalysisEl = document.getElementById('timeAnalysis');
+      if (result.timeAnalysis) {
+        timeAnalysisEl.innerHTML = Object.entries(result.timeAnalysis).map(([label, value]) => `
+          <div class="time-stat">
+            <strong>${label}:</strong> ${value}
+          </div>
+        `).join('');
+      } else {
+        timeAnalysisEl.innerHTML = '<p>Time data not available.</p>';
+      }
+      
+      // Achievement progress
+      const achievementProgressEl = document.getElementById('achievementProgress');
+      if (result.achievements && result.achievements.length > 0) {
+        achievementProgressEl.innerHTML = `
+          <h3>Earned Achievements</h3>
+          <div class="badges-grid">
+            ${result.achievements.map(ach => `
+              <div class="badge new-badge">
+                <i class="fas fa-medal"></i>
+                <h4>${ach}</h4>
+                <p>Earned just now!</p>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } else {
+        achievementProgressEl.innerHTML = '<p>No achievements earned this time.</p>';
+      }
+      
+      // Question review
+      const questionReviewEl = document.getElementById('questionReview');
+      if (result.questionReview && result.questionReview.length > 0) {
+        questionReviewEl.innerHTML = `
+          <div class="question-review-container">
+            ${result.questionReview.map(q => `
+              <div class="question-review ${q.isCorrect ? 'correct' : 'incorrect'}">
+                <div class="question-header">
+                  <strong>Q${q.number}:</strong> ${q.question}
+                </div>
+                <p class="user-answer">Your answer: ${q.yourAnswer || 'No answer'} 
+                  <span class="result-icon">${q.isCorrect ? '✓' : '✗'}</span>
+                </p>
+                ${!q.isCorrect ? `<p class="correct-answer">Correct answer: ${q.correctAnswer}</p>` : ''}
+                <p class="explanation">Explanation: ${q.explanation}</p>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } else {
+        questionReviewEl.innerHTML = '<p>No question review data available.</p>';
+      }
+      
+      // Learning path
+      const learningPathEl = document.getElementById('learningPath');
+      if (result.learningPath && result.learningPath.length > 0) {
+        learningPathEl.innerHTML = `
+          <h3>Recommended Learning Path</h3>
+          <div class="path-container">
+            ${result.learningPath.map(item => `
+              <div class="path-item">
+                <i class="fas ${item.completed ? 'fa-check-circle completed' : 'fa-circle not-completed'}"></i>
+                <div>
+                  <strong>${item.topic}</strong>
+                  <p>${item.completed ? 'Completed' : 'Not completed'}</p>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } else {
+        learningPathEl.innerHTML = '<p>No learning path data available.</p>';
+      }
+    }
+  }
+});
+
+async function updateDashboard() {
+  const userId = localStorage.getItem('userId');
+  if (!userId) {
+    document.getElementById('topicMastery').innerHTML = '<p>Please log in to view your dashboard.</p>';
+    return;
+  }
+  
+  // Fetch weak topics
+  const weakRes = await fetch(`http://localhost:5000/api/user-weak-topics/${userId}`);
+  const weakData = await weakRes.json();
+  
+  // Fetch quiz history
+  let quizHistory = [];
+  try {
+    const histRes = await fetch(`http://localhost:5000/api/user-history/${userId}`);
+    quizHistory = await histRes.json();
+  } catch (e) {
+    console.error('Failed to fetch quiz history:', e);
+  }
+  
+  // Fetch badges
+  const badgesRes = await fetch(`http://localhost:5000/api/user-badges/${userId}`);
+  const badgesData = await badgesRes.json();
+  
+  // Update stats
+  document.getElementById('quizzesCompleted').textContent = quizHistory.length || 0;
+  
+  // Calculate average score
+  let totalScore = 0, totalQuestions = 0;
+  quizHistory.forEach(attempt => {
+    totalScore += attempt.score;
+    totalQuestions += attempt.total_questions;
+  });
+  const averageScore = quizHistory.length ? Math.round((totalScore / totalQuestions) * 100) : 0;
+  document.getElementById('averageScore').textContent = `${averageScore}%`;
+  document.getElementById('badgesEarned').textContent = badgesData.badges?.length || '0';
+  
+  // Calculate total time practiced
+  let totalTime = 0;
+  quizHistory.forEach(attempt => {
+    totalTime += attempt.time_taken || 0;
+  });
+  const hours = Math.floor(totalTime / 3600);
+  const minutes = Math.floor((totalTime % 3600) / 60);
+  const timeStr = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+  document.getElementById('timePracticed').textContent = timeStr;
+  
+  // Update topic mastery
+  const topicMasteryEl = document.getElementById('topicMastery');
+  if (quizHistory.length === 0) {
+    topicMasteryEl.innerHTML = '<p>No mastery data yet. Take a quiz!</p>';
+  } else if (weakData.topics && weakData.topics.length > 0) {
+    topicMasteryEl.innerHTML = weakData.topics.map(topic => {
+      const percentage = Math.round(topic.correct / topic.total * 100);
+      return `
+        <div class="topic-mastery">
+          <div class="topic-header">
+            <span>${topic.topic}</span>
+            <span>${percentage}%</span>
+          </div>
+          <div class="mastery-bar">
+            <div class="mastery-progress" style="width: ${percentage}%"></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } else {
+    topicMasteryEl.innerHTML = '<p>No weak topics detected yet. Keep practicing!</p>';
+  }
+  
+  // Update focus areas (recommendations)
+  const recommendationsEl = document.getElementById('recommendations');
+  if (weakData.topics && weakData.topics.length > 0) {
+    const weakTopics = weakData.topics
+      .filter(topic => (topic.correct / topic.total) < 0.7)
+      .map(topic => topic.topic);
+      
+    if (weakTopics.length > 0) {
+      recommendationsEl.innerHTML = `
+        <h3>Focus Areas</h3>
+        <ul>
+          ${weakTopics.map(topic => `<li>${topic}</li>`).join('')}
+        </ul>
+        <p>These topics need more practice based on your performance.</p>
+      `;
+    } else {
+      recommendationsEl.innerHTML = '<p>Great job! You have no weak areas. Keep up the good work!</p>';
+    }
+  } else {
+    recommendationsEl.innerHTML = '<p>No focus areas identified yet. Complete a quiz to get recommendations.</p>';
+  }
+  if (weakData.topics) {
+    const weakTopics = weakData.topics
+      .filter(topic => (topic.correct / topic.total) < 0.7)
+      .map(topic => topic.topic);
+    
+    localStorage.setItem('weakTopics', JSON.stringify(weakTopics));
+  }
+  // Update recent activity
+  const recentActivityEl = document.getElementById('recentActivity');
+  if (quizHistory.length > 0) {
+    recentActivityEl.innerHTML = quizHistory.slice(0, 5).map(attempt => `
+      <div class="activity-item">
+        <i class="fas fa-clipboard-list"></i>
+        <div>
+          <strong>${new Date(attempt.start_time).toLocaleDateString()}</strong>
+          <p>Score: ${attempt.score}/${attempt.total_questions}</p>
+        </div>
+      </div>
+    `).join('');
+  } else {
+    recentActivityEl.innerHTML = '<p>No recent quiz attempts. Take a quiz!</p>';
+  }
+  
+  // Update recent achievements
+  const recentAchievementsEl = document.getElementById('recentAchievements');
+  if (badgesData.badges?.length > 0) {
+    recentAchievementsEl.innerHTML = badgesData.badges.slice(0, 3).map(badge => `
+      <div class="achievement-item">
+        <i class="fas fa-medal"></i>
+        <div>
+          <strong>${badge.badge_name}</strong>
+          <p>Earned on ${new Date(badge.date_awarded).toLocaleDateString()}</p>
+        </div>
+      </div>
+    `).join('');
+  } else {
+    recentAchievementsEl.innerHTML = '<p>No achievements earned yet.</p>';
+  }
+  
+  // Update streak
+  const streak = localStorage.getItem('streak') || 0;
+  const streakContainer = document.getElementById('streakContainer');
+  if (streakContainer) {
+    streakContainer.innerHTML = `
+      <div class="streak-count">🔥 ${streak} day streak</div>
+      <div class="streak-calendar">
+        ${renderStreakCalendar(streak)}
+      </div>
+      <p>Complete a quiz today to keep your streak going!</p>
+    `;
+  }
 }
 
-// Utility functions
+function renderStreakCalendar(streak) {
+  streak = parseInt(streak) || 0;
+  return Array(7).fill(0).map((_, i) => {
+    const isActive = i < streak;
+    return `
+      <div class="streak-day ${isActive ? 'active' : ''}">
+        ${isActive ? '✓' : i+1}
+      </div>
+    `;
+  }).join('');
+}
+
 function showLoading() {
   const overlay = document.createElement('div');
   overlay.className = 'loading-overlay';
-  overlay.innerHTML = '<div class="spinner"></div>';
+  overlay.innerHTML = '<div class="loader"></div>';
   document.body.appendChild(overlay);
 }
 
@@ -339,25 +577,10 @@ function hideLoading() {
   if (overlay) overlay.remove();
 }
 
-function showFeedback(message, isError = false) {
+function showFeedback(message, isError) {
   const feedback = document.createElement('div');
-  feedback.className = isError ? 'feedback error' : 'feedback';
+  feedback.className = `feedback ${isError ? 'error' : ''}`;
   feedback.textContent = message;
   document.body.appendChild(feedback);
   setTimeout(() => feedback.remove(), 3000);
-}
-
-function showConfetti() {
-  for (let i = 0; i < 150; i++) {
-    const confetti = document.createElement('div');
-    confetti.className = 'confetti';
-    confetti.style.left = Math.random() * 100 + 'vw';
-    confetti.style.animationDelay = Math.random() * 2 + 's';
-    confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 60%)`;
-    document.body.appendChild(confetti);
-    
-    setTimeout(() => {
-      confetti.remove();
-    }, 5000);
-  }
 }
