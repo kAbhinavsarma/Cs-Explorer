@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const db = require('./database');
+const { userWeakTopics } = require('./sharedData'); // Added shared import
 
 // Register route
 router.post('/register', async (req, res) => {
@@ -31,7 +32,7 @@ router.post('/register', async (req, res) => {
         // Hash password
         const salt = await bcrypt.genSalt(10);
         const password_hash = await bcrypt.hash(password, salt);
-        userWeakTopics[userId] = [];
+        
         // Insert user into DB
         db.run(
           'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)',
@@ -41,6 +42,8 @@ router.post('/register', async (req, res) => {
               console.error('Database error:', err);
               return res.status(500).json({ error: 'Database error' });
             }
+            const userId = this.lastID;
+            userWeakTopics[userId] = []; // Initialize for new user
             res.json({ message: 'User registered successfully' });
           }
         );
@@ -82,36 +85,41 @@ router.post('/login', async (req, res) => {
         }
 
         // Update streak
-        const today = new Date().toISOString().split('T')[0];
-        const lastActive = user.last_active || today;
-        let streak = user.streak_days || 0;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const lastActive = user.last_active ? new Date(user.last_active) : today;
+        lastActive.setHours(0, 0, 0, 0);
         
-        if (lastActive === today) {
+        let streak = user.streak_days || 0;
+        const oneDay = 24 * 60 * 60 * 1000; // milliseconds in a day
+        
+        // Calculate day difference
+        const diffDays = Math.round(Math.abs((today - lastActive) / oneDay));
+        
+        if (diffDays === 0) {
           // Already active today, streak remains the same
+        } else if (diffDays === 1) {
+          streak += 1;
         } else {
-          const yesterday = new Date();
-          yesterday.setDate(yesterday.getDate() - 1);
-          const yesterdayStr = yesterday.toISOString().split('T')[0];
-          
-          if (lastActive === yesterdayStr) {
-            streak = streak + 1;
-          } else {
-            streak = 1; // Reset streak if not consecutive
-          }
+          streak = 1; // Reset streak if not consecutive
         }
-         if (!userWeakTopics[user.id]) {
+
+        // Initialize weak topics if needed
+        if (!userWeakTopics[user.id]) {
           userWeakTopics[user.id] = [];
         }
 
         // Update user's streak and last active
+        const todayISO = today.toISOString().split('T')[0];
         db.run(
           'UPDATE users SET last_active = ?, streak_days = ? WHERE id = ?',
-          [today, streak, user.id],
+          [todayISO, streak, user.id],
           (err) => {
             if (err) {
               console.error('Update streak error:', err);
-              // We still log in the user even if streak update fails
+              // Still return success but log the error
             }
+            // FIX: Added userId to response
             res.json({ 
               message: 'Login successful', 
               userId: user.id, 

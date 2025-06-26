@@ -40,14 +40,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         const data = await response.json();
         if (response.ok) {
-          showFeedback('Login successful! Redirecting...', false);
-          localStorage.setItem('userId', data.userId);
-          localStorage.setItem('username', data.username);
-          localStorage.setItem('streak', data.streak);
-          setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
-        } else {
-          showFeedback(data.error || 'Login failed', true);
-        }
+  showFeedback('Login successful! Redirecting...', false);
+  
+  // FIX: Store userId and username
+  localStorage.setItem('userId', data.userId);
+  localStorage.setItem('username', data.username);
+  localStorage.setItem('streak', data.streak);
+  
+  // Redirect to dashboard
+  setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+} else {
+  showFeedback(data.error || 'Login failed', true);
+}
       } catch (error) {
         showFeedback('Network error. Please try again.', true);
       } finally {

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('./database');
-const userWeakTopics = {};
+const { userWeakTopics } = require('./sharedData'); // Use shared import
 router.post('/submit-quiz', (req, res) => {
   const { userId, answers } = req.body;
   if (!userId || !answers || !Array.isArray(answers)) {
