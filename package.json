@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node backend/index.js",
     "dev": "nodemon backend/index.js",
-    "build": "cd backend && npm install && npm rebuild sqlite3",
-    "postinstall": "cd backend && npm install && npm rebuild sqlite3"
+    "build": "cd backend && npm install",
+    "postinstall": "cd backend && npm install"
   },
   "keywords": ["education", "computer-science", "quiz", "learning"],
   "author": "CS Explorer Team",
