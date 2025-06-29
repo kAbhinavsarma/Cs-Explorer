@@ -8,96 +8,160 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-  <nav class="navbar">
+  <nav class="minimal-nav">
     <div class="nav-container">
       <a href="index.html" class="nav-brand">CS Explorer</a>
-      <div class="nav-links">
-        <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-        <a href="quiz.html"><i class="fas fa-question-circle"></i> Quiz</a>
-      </div>
-      <div id="themeToggle">
-        <i class="fas fa-moon"></i>
-      </div>
     </div>
   </nav>
 
   <main class="main-container">
-    <div class="page-header">
-      <h1 class="page-title">Welcome to CS Explorer</h1>
-      <p class="page-subtitle">Your personalized computer science learning platform</p>
-    </div>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1 class="hero-title">Master Computer Science with <span class="gradient-text">CS Explorer</span></h1>
+          <p class="hero-subtitle">Elevate your programming skills with our adaptive learning platform. Take personalized quizzes, track your progress, and become a CS expert.</p>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <span class="stat-number">50+</span>
+              <span class="stat-label">CS Topics</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">1000+</span>
+              <span class="stat-label">Questions</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">Adaptive</span>
+              <span class="stat-label">Learning</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-auth">
+          <div class="auth-tabs">
+            <button class="auth-tab active" data-tab="login">Sign In</button>
+            <button class="auth-tab" data-tab="signup">Create Account</button>
+          </div>
+          
+          <!-- Login Form -->
+          <div class="auth-form-container" id="loginTab">
+            <form id="loginForm" class="auth-form">
+              <div class="form-group">
+                <label for="loginUsername">Username</label>
+                <div class="input-wrapper">
+                  <i class="fas fa-user input-icon"></i>
+                  <input type="text" id="loginUsername" placeholder="Enter your username" required minlength="3">
+                  <div class="input-validation" id="loginUsernameError"></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <div class="input-wrapper">
+                  <i class="fas fa-lock input-icon"></i>
+                  <input type="password" id="loginPassword" placeholder="Enter your password" required minlength="6">
+                  <div class="input-validation" id="loginPasswordError"></div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary btn-full">
+                <i class="fas fa-sign-in-alt"></i>
+                Sign In to Dashboard
+              </button>
+            </form>
+          </div>
 
-    <div class="auth-container">
-      <div class="auth-card">
-        <h2>Sign In</h2>
-        <form id="loginForm">
-          <div class="form-group">
-            <label for="loginUsername">Username</label>
-            <input type="text" id="loginUsername" required>
+          <!-- Signup Form -->
+          <div class="auth-form-container hidden" id="signupTab">
+            <form id="signupForm" class="auth-form">
+              <div class="form-group">
+                <label for="signupUsername">Username</label>
+                <div class="input-wrapper">
+                  <i class="fas fa-user input-icon"></i>
+                  <input type="text" id="signupUsername" placeholder="Choose a username" required minlength="3" maxlength="20">
+                  <div class="input-validation" id="signupUsernameError"></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="signupEmail">Email Address</label>
+                <div class="input-wrapper">
+                  <i class="fas fa-envelope input-icon"></i>
+                  <input type="email" id="signupEmail" placeholder="Enter your email" required>
+                  <div class="input-validation" id="signupEmailError"></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="signupPassword">Password</label>
+                <div class="input-wrapper">
+                  <i class="fas fa-lock input-icon"></i>
+                  <input type="password" id="signupPassword" placeholder="Create a password" required minlength="8">
+                  <div class="input-validation" id="signupPasswordError"></div>
+                </div>
+                <div class="password-strength">
+                  <div class="strength-bar">
+                    <div class="strength-fill" id="passwordStrength"></div>
+                  </div>
+                  <div class="strength-text" id="passwordStrengthText">Password strength</div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-success btn-full">
+                <i class="fas fa-user-plus"></i>
+                Create Account
+              </button>
+            </form>
           </div>
-          <div class="form-group">
-            <label for="loginPassword">Password</label>
-            <input type="password" id="loginPassword" required>
-          </div>
-          <button type="submit" class="btn btn-primary btn-lg">Sign In</button>
-        </form>
+        </div>
       </div>
+    </section>
 
-      <div class="auth-card">
-        <h2>Create Account</h2>
-        <form id="signupForm">
-          <div class="form-group">
-            <label for="signupUsername">Username</label>
-            <input type="text" id="signupUsername" required>
-          </div>
-          <div class="form-group">
-            <label for="signupEmail">Email</label>
-            <input type="email" id="signupEmail" required>
-          </div>
-          <div class="form-group">
-            <label for="signupPassword">Password</label>
-            <input type="password" id="signupPassword" required>
-          </div>
-          <button type="submit" class="btn btn-success btn-lg">Register</button>
-        </form>
+    <!-- Features Section -->
+    <section class="features-section">
+      <div class="section-header">
+        <h2 class="section-title">Why Choose CS Explorer?</h2>
+        <p class="section-subtitle">Advanced features designed to accelerate your learning journey</p>
       </div>
-    </div>
-
-    <div class="features">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon info">
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
             <i class="fas fa-brain"></i>
           </div>
-          <div class="card-title-section">
-            <h3 class="card-title">Adaptive Learning</h3>
-            <p class="card-subtitle">Personalized quizzes that adapt to your skill level</p>
-          </div>
+          <h3 class="feature-title">Adaptive Learning</h3>
+          <p class="feature-description">AI-powered quizzes that adapt to your skill level and learning pace for optimal knowledge retention.</p>
         </div>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon success">
+        <div class="feature-card">
+          <div class="feature-icon">
             <i class="fas fa-chart-line"></i>
           </div>
-          <div class="card-title-section">
-            <h3 class="card-title">Progress Tracking</h3>
-            <p class="card-subtitle">Monitor your improvement with detailed analytics</p>
-          </div>
+          <h3 class="feature-title">Progress Analytics</h3>
+          <p class="feature-description">Detailed insights into your learning progress with topic mastery tracking and performance metrics.</p>
         </div>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon warning">
+        <div class="feature-card">
+          <div class="feature-icon">
             <i class="fas fa-trophy"></i>
           </div>
-          <div class="card-title-section">
-            <h3 class="card-title">Achievement System</h3>
-            <p class="card-subtitle">Earn badges as you master different CS topics</p>
+          <h3 class="feature-title">Achievement System</h3>
+          <p class="feature-description">Earn badges and maintain learning streaks as you master different computer science topics.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-code"></i>
           </div>
+          <h3 class="feature-title">Comprehensive Topics</h3>
+          <p class="feature-description">Cover algorithms, data structures, databases, networking, and more with expert-crafted questions.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <h3 class="feature-title">Flexible Learning</h3>
+          <p class="feature-description">Learn at your own pace with timed quizzes and instant feedback on your performance.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <h3 class="feature-title">Community Driven</h3>
+          <p class="feature-description">Join a community of learners and compete with others to enhance your motivation.</p>
         </div>
       </div>
-    </div>
+    </section>
   </main>
 
   <footer class="footer">

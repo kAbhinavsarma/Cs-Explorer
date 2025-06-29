@@ -244,7 +244,7 @@ router.get('/user-weak-topics/:userId', (req, res) => {
 router.get('/user-history/:userId', (req, res) => {
   const userId = req.params.userId;
   db.all(
-    'SELECT id, score, total_questions, start_time, time_taken FROM quiz_attempts WHERE user_id = ? ORDER BY start_time DESC LIMIT 10',
+    'SELECT id, score, total_questions, start_time as completed_at, time_taken FROM quiz_attempts WHERE user_id = ? ORDER BY start_time DESC LIMIT 10',
     [userId],
     (err, rows) => {
       if (err) {
@@ -256,11 +256,45 @@ router.get('/user-history/:userId', (req, res) => {
   );
 });
 
+// Award welcome badge to new users
+function awardWelcomeBadge(userId) {
+  // Check if user already has any badges
+  db.get(
+    'SELECT COUNT(*) as count FROM badges WHERE user_id = ?',
+    [userId],
+    (err, row) => {
+      if (err) {
+        console.error('Error checking badges:', err);
+        return;
+      }
+      
+      // If user has no badges, award welcome badge
+      if (row.count === 0) {
+        db.run(
+          'INSERT INTO badges (user_id, badge_name) VALUES (?, ?)',
+          [userId, 'Welcome to CS Explorer!'],
+          (err) => {
+            if (err) {
+              console.error('Error awarding welcome badge:', err);
+            } else {
+              console.log('Welcome badge awarded to user:', userId);
+            }
+          }
+        );
+      }
+    }
+  );
+}
+
 // Get user badges
 router.get('/user-badges/:userId', (req, res) => {
   const userId = req.params.userId;
+  
+  // Award welcome badge if needed
+  awardWelcomeBadge(userId);
+  
   db.all(
-    'SELECT badge_name, date_awarded FROM badges WHERE user_id = ? ORDER BY date_awarded DESC',
+    'SELECT badge_name as name, badge_name as description, date_awarded FROM badges WHERE user_id = ? ORDER BY date_awarded DESC',
     [userId],
     (err, rows) => {
       if (err) {
@@ -270,6 +304,52 @@ router.get('/user-badges/:userId', (req, res) => {
       res.json({ badges: rows });
     }
   );
+});
+
+// Create sample data for testing (development only)
+router.post('/create-sample-data/:userId', (req, res) => {
+  const userId = req.params.userId;
+  
+  // Create some sample quiz attempts
+  const sampleAttempts = [
+    { score: 8, total: 10, timeTaken: 480 },
+    { score: 6, total: 10, timeTaken: 520 },
+    { score: 9, total: 10, timeTaken: 360 },
+    { score: 7, total: 10, timeTaken: 600 },
+    { score: 10, total: 10, timeTaken: 420 }
+  ];
+  
+  let completed = 0;
+  const total = sampleAttempts.length;
+  
+  sampleAttempts.forEach((attempt, index) => {
+    // Insert with different timestamps (spread over last few days)
+    const timestamp = new Date();
+    timestamp.setDate(timestamp.getDate() - (total - index - 1));
+    
+    db.run(
+      'INSERT INTO quiz_attempts (user_id, score, total_questions, start_time, time_taken) VALUES (?, ?, ?, ?, ?)',
+      [userId, attempt.score, attempt.total, timestamp.toISOString(), attempt.timeTaken],
+      function(err) {
+        if (err) {
+          console.error('Error creating sample attempt:', err);
+        } else {
+          completed++;
+          // Award some sample badges based on performance
+          if (attempt.score === attempt.total) {
+            db.run('INSERT INTO badges (user_id, badge_name) VALUES (?, ?)', [userId, 'Perfect Score']);
+          }
+          if (attempt.timeTaken < 400) {
+            db.run('INSERT INTO badges (user_id, badge_name) VALUES (?, ?)', [userId, 'Speed Demon']);
+          }
+          
+          if (completed === total) {
+            res.json({ message: 'Sample data created successfully', attempts: total });
+          }
+        }
+      }
+    );
+  });
 });
 
 module.exports = router;

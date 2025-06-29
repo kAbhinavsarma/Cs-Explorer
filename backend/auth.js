@@ -33,10 +33,11 @@ router.post('/register', async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const password_hash = await bcrypt.hash(password, salt);
         
-        // Insert user into DB
+        // Insert user into DB with initial streak values
+        const today = new Date().toISOString().split('T')[0];
         db.run(
-          'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)',
-          [username, email, password_hash],
+          'INSERT INTO users (username, email, password_hash, last_active, streak_days) VALUES (?, ?, ?, ?, ?)',
+          [username, email, password_hash, today, 0],
           function (err) {
             if (err) {
               console.error('Database error:', err);
@@ -87,21 +88,37 @@ router.post('/login', async (req, res) => {
         // Update streak
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        const lastActive = user.last_active ? new Date(user.last_active) : today;
-        lastActive.setHours(0, 0, 0, 0);
+        const todayISO = today.toISOString().split('T')[0];
         
         let streak = user.streak_days || 0;
-        const oneDay = 24 * 60 * 60 * 1000; // milliseconds in a day
         
-        // Calculate day difference
-        const diffDays = Math.round(Math.abs((today - lastActive) / oneDay));
-        
-        if (diffDays === 0) {
-          // Already active today, streak remains the same
-        } else if (diffDays === 1) {
-          streak += 1;
+        if (user.last_active) {
+          const lastActive = new Date(user.last_active);
+          lastActive.setHours(0, 0, 0, 0);
+          
+          // Calculate day difference (today - lastActive)
+          const diffDays = Math.floor((today - lastActive) / (24 * 60 * 60 * 1000));
+          
+          if (diffDays === 0) {
+            // Already active today, streak remains the same
+            console.log('User already active today, streak remains:', streak);
+          } else if (diffDays === 1) {
+            // Consecutive day
+            streak += 1;
+            console.log('Consecutive day, streak increased to:', streak);
+          } else if (diffDays > 1) {
+            // Missed days, reset streak
+            streak = 1;
+            console.log('Missed days, streak reset to:', streak);
+          } else {
+            // This shouldn't happen (negative days), but reset to be safe
+            streak = 1;
+            console.log('Unexpected date difference, streak reset to:', streak);
+          }
         } else {
-          streak = 1; // Reset streak if not consecutive
+          // First time user or no last_active date
+          streak = 1;
+          console.log('First time user, streak set to:', streak);
         }
 
         // Initialize weak topics if needed
@@ -110,7 +127,6 @@ router.post('/login', async (req, res) => {
         }
 
         // Update user's streak and last active
-        const todayISO = today.toISOString().split('T')[0];
         db.run(
           'UPDATE users SET last_active = ?, streak_days = ? WHERE id = ?',
           [todayISO, streak, user.id],

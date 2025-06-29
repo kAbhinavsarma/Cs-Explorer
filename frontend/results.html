@@ -8,64 +8,187 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-  <nav class="navbar">
-    <div class="nav-container">
-      <a href="index.html" class="nav-brand">CS Explorer</a>
-      <div class="nav-links">
-        <a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-        <a href="quiz.html"><i class="fas fa-question-circle"></i> Quiz</a>
+  <!-- Floating Controls -->
+  <div class="floating-controls">
+    <a href="dashboard.html" class="fab fab-dashboard" title="Dashboard">
+      <i class="fas fa-tachometer-alt"></i>
+    </a>
+    <a href="quiz.html" class="fab fab-quiz" title="Take Another Quiz">
+      <i class="fas fa-redo"></i>
+    </a>
+  </div>
+
+  <!-- Results Header -->
+  <header class="results-header">
+    <div class="header-content">
+      <div class="results-intro">
+        <h1 class="results-title">🎉 Quiz Complete!</h1>
+        <p class="results-subtitle">Here's how you performed</p>
       </div>
-      <div id="themeToggle">
-        <i class="fas fa-moon"></i>
+      <div class="header-actions">
+        <a href="quiz.html" class="action-btn primary">
+          <i class="fas fa-redo"></i>
+          Retake Quiz
+        </a>
+        <a href="dashboard.html" class="action-btn secondary">
+          <i class="fas fa-arrow-left"></i>
+          Dashboard
+        </a>
       </div>
     </div>
-  </nav>
+  </header>
 
-  <main class="main-container">
-    <div class="card">
-      <h1>Quiz Results</h1>
-      <div id="resultsContent"></div>
+  <main class="results-main">
+    <!-- Score Overview -->
+    <section class="score-overview">
+      <div id="resultsContent" class="score-card">
+        <div class="score-loading">
+          <div class="loading-spinner"></div>
+          <p>Calculating your results...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results Grid -->
+    <div class="results-grid">
+      <!-- Topic Performance Card -->
+      <div class="results-card performance-card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <i class="fas fa-chart-pie"></i>
+            Topic Performance
+          </h2>
+          <div class="card-badge">
+            <i class="fas fa-star"></i>
+            Analysis
+          </div>
+        </div>
+        <div class="card-content">
+          <div id="topicPerformance" class="topic-performance-content">
+            <div class="performance-loading">Loading performance data...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommendations Card -->
+      <div class="results-card recommendations-card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <i class="fas fa-lightbulb"></i>
+            Smart Recommendations
+          </h2>
+          <div class="card-badge success">
+            <i class="fas fa-brain"></i>
+            AI-Powered
+          </div>
+        </div>
+        <div class="card-content">
+          <div id="recommendations" class="recommendations-content">
+            <div class="recommendations-loading">Generating recommendations...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Time Analysis Card -->
+      <div class="results-card time-card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <i class="fas fa-clock"></i>
+            Time Analysis
+          </h2>
+          <div class="card-badge info">
+            <i class="fas fa-stopwatch"></i>
+            Timing
+          </div>
+        </div>
+        <div class="card-content">
+          <div id="timeAnalysis" class="time-analysis-content">
+            <div class="time-loading">Analyzing time patterns...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Achievements Card -->
+      <div class="results-card achievements-card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <i class="fas fa-trophy"></i>
+            Achievements Unlocked
+          </h2>
+          <div class="card-badge warning">
+            <i class="fas fa-medal"></i>
+            Rewards
+          </div>
+        </div>
+        <div class="card-content">
+          <div id="achievementProgress" class="achievements-content">
+            <div class="achievements-loading">Checking achievements...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question Review Card -->
+      <div class="results-card review-card full-width">
+        <div class="card-header">
+          <h2 class="card-title">
+            <i class="fas fa-search"></i>
+            Detailed Question Review
+          </h2>
+          <div class="review-controls">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="correct">Correct</button>
+            <button class="filter-btn" data-filter="incorrect">Incorrect</button>
+          </div>
+        </div>
+        <div class="card-content">
+          <div id="questionReview" class="question-review-content">
+            <div class="review-loading">Loading question review...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Learning Path Card -->
+      <div class="results-card learning-card full-width">
+        <div class="card-header">
+          <h2 class="card-title">
+            <i class="fas fa-route"></i>
+            Your Learning Path
+          </h2>
+          <div class="card-badge primary">
+            <i class="fas fa-compass"></i>
+            Guided
+          </div>
+        </div>
+        <div class="card-content">
+          <div id="learningPath" class="learning-path-content">
+            <div class="path-loading">Crafting your learning path...</div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="card">
-      <h2>Topic Performance</h2>
-      <div id="topicPerformance"></div>
-    </div>
-
-    <div class="card">
-      <h2>Recommendations</h2>
-      <div id="recommendations"></div>
-    </div>
-
-    <div class="card">
-      <h2>Time Analysis</h2>
-      <div id="timeAnalysis"></div>
-    </div>
-
-    <div class="card">
-      <h2>Earned Achievements</h2>
-      <div id="achievementProgress"></div>
-    </div>
-
-    <div class="card">
-      <h2>Question Review</h2>
-      <div id="questionReview"></div>
-    </div>
-
-    <div class="card">
-      <h2>Learning Path</h2>
-      <div id="learningPath"></div>
-    </div>
-
-    <div class="action-buttons">
-      <a href="quiz.html" class="btn btn-primary">Take Another Quiz</a>
-      <a href="dashboard.html" class="btn btn-secondary">Back to Dashboard</a>
-    </div>
+    <!-- Action Section -->
+    <section class="results-actions">
+      <div class="action-card">
+        <h3>What's Next?</h3>
+        <p>Continue your learning journey with these recommended actions:</p>
+        <div class="action-buttons">
+          <a href="quiz.html" class="action-btn primary large">
+            <i class="fas fa-brain"></i>
+            Take Another Quiz
+          </a>
+          <button class="action-btn secondary" id="practiceWeakAreasBtn">
+            <i class="fas fa-target"></i>
+            Practice Weak Areas
+          </button>
+          <a href="dashboard.html" class="action-btn tertiary">
+            <i class="fas fa-tachometer-alt"></i>
+            View Dashboard
+          </a>
+        </div>
+      </div>
+    </section>
   </main>
-
-  <footer class="footer">
-    <p>© 2025 CS Explorer. All rights reserved.</p>
-  </footer>
 
   <script src="script.js"></script>
 </body>

@@ -8,78 +8,327 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-  <nav class="navbar">
-    <div class="nav-container">
-      <a href="index.html" class="nav-brand">CS Explorer</a>
-      <div class="nav-links">
-        <a href="dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-        <a href="quiz.html"><i class="fas fa-question-circle"></i> Quiz</a>
+  <!-- Modern Sidebar -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <i class="fas fa-graduation-cap"></i>
+        <span class="brand-text">CS Explorer</span>
       </div>
-      <div id="themeToggle">
-        <i class="fas fa-moon"></i>
+      <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+
+    <div class="sidebar-content">
+      <!-- User Profile -->
+      <div class="user-profile">
+        <div class="profile-avatar">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="profile-info">
+          <div class="profile-name" id="sidebarUsername">Student</div>
+          <div class="profile-status">Active Learner</div>
+        </div>
+      </div>
+
+      <!-- Navigation Menu -->
+      <ul class="sidebar-menu">
+        <li class="menu-item active">
+          <a href="dashboard.html" class="menu-link">
+            <i class="fas fa-tachometer-alt"></i>
+            <span class="menu-text">Dashboard</span>
+          </a>
+        </li>
+        <li class="menu-item">
+          <a href="quiz.html" class="menu-link">
+            <i class="fas fa-brain"></i>
+            <span class="menu-text">Take Quiz</span>
+          </a>
+        </li>
+        <li class="menu-item dropdown">
+          <div class="menu-link dropdown-toggle" data-dropdown="practice">
+            <i class="fas fa-dumbbell"></i>
+            <span class="menu-text">Practice</span>
+            <i class="fas fa-chevron-down dropdown-arrow"></i>
+          </div>
+          <ul class="dropdown-menu" id="practiceDropdown">
+            <li><a href="#" id="practiceWeakTopics"><i class="fas fa-target"></i> Weak Areas</a></li>
+            <li><a href="#" id="practiceByTopic"><i class="fas fa-list"></i> By Topic</a></li>
+            <li><a href="#" id="practiceRandom"><i class="fas fa-random"></i> Random</a></li>
+          </ul>
+        </li>
+        <li class="menu-item dropdown">
+          <div class="menu-link dropdown-toggle" data-dropdown="progress">
+            <i class="fas fa-chart-line"></i>
+            <span class="menu-text">Progress</span>
+            <i class="fas fa-chevron-down dropdown-arrow"></i>
+          </div>
+          <ul class="dropdown-menu" id="progressDropdown">
+            <li><a href="results.html"><i class="fas fa-history"></i> Quiz History</a></li>
+            <li><a href="#" id="viewBadges"><i class="fas fa-medal"></i> Badges</a></li>
+            <li><a href="#" id="viewStats"><i class="fas fa-analytics"></i> Statistics</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <!-- Quick Stats -->
+      <div class="sidebar-stats">
+        <h4>Quick Stats</h4>
+        <div class="quick-stat">
+          <i class="fas fa-fire"></i>
+          <span>Streak: <strong id="sidebarStreak">0</strong> days</span>
+        </div>
+        <div class="quick-stat">
+          <i class="fas fa-trophy"></i>
+          <span>Rank: <strong>Beginner</strong></span>
+        </div>
+      </div>
+
+      <!-- Logout Button -->
+      <div class="sidebar-footer">
+        <button class="logout-btn" id="logoutBtn">
+          <i class="fas fa-sign-out-alt"></i>
+          <span class="menu-text">Logout</span>
+        </button>
       </div>
     </div>
   </nav>
 
-  <main class="main-container">
-    <div class="page-header">
-      <h1 class="page-title">My Dashboard</h1>
-      <p class="page-subtitle">Track your progress and continue learning</p>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-clipboard-check"></i></div>
-        <div id="quizzesCompleted" class="stat-value">0</div>
-        <div class="stat-label">Quizzes Completed</div>
+  <!-- Main Content Area -->
+  <main class="main-content" id="mainContent">
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Welcome back! Ready to continue learning?</p>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-star"></i></div>
-        <div id="averageScore" class="stat-value">0%</div>
-        <div class="stat-label">Average Score</div>
+      <div class="top-bar-right">
+        <div class="streak-display">
+          <div class="streak-icon">🔥</div>
+          <div class="streak-info">
+            <span class="streak-number" id="headerStreak">0</span>
+            <span class="streak-text">Day Streak</span>
+          </div>
+        </div>
+        <div class="notification-bell" onclick="showNotificationsModal()">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge" id="notificationBadge">3</span>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-trophy"></i></div>
-        <div id="badgesEarned" class="stat-value">0</div>
-        <div class="stat-label">Badges Earned</div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-content">
+      <!-- Stats Grid -->
+      <section class="stats-section">
+        <div class="stats-grid">
+          <div class="stat-card primary">
+            <div class="stat-background">
+              <i class="fas fa-clipboard-check"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value" id="quizzesCompleted">0</div>
+              <div class="stat-label">Quizzes Completed</div>
+              <div class="stat-trend">
+                <i class="fas fa-arrow-up"></i>
+                <span>+2 this week</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="stat-card success">
+            <div class="stat-background">
+              <i class="fas fa-star"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value" id="averageScore">0%</div>
+              <div class="stat-label">Average Score</div>
+              <div class="stat-trend">
+                <i class="fas fa-arrow-up"></i>
+                <span>+5% improvement</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="stat-card warning">
+            <div class="stat-background">
+              <i class="fas fa-trophy"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value" id="badgesEarned">0</div>
+              <div class="stat-label">Badges Earned</div>
+              <div class="stat-trend">
+                <i class="fas fa-medal"></i>
+                <span>Next: Algorithm Master</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="stat-card info">
+            <div class="stat-background">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value" id="timePracticed">0h</div>
+              <div class="stat-label">Time Practiced</div>
+              <div class="stat-trend">
+                <i class="fas fa-calendar-week"></i>
+                <span>This week</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Dashboard Grid -->
+      <div class="dashboard-grid">
+        <!-- Topic Mastery Card -->
+        <div class="dashboard-card topic-mastery-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-brain"></i>
+              Topic Mastery
+            </h2>
+            <button class="card-action">
+              <i class="fas fa-external-link-alt"></i>
+            </button>
+          </div>
+          <div class="card-content">
+            <div id="topicMastery" class="topic-mastery-content"></div>
+          </div>
+        </div>
+
+        <!-- Quick Actions Card -->
+        <div class="dashboard-card quick-actions-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-bolt"></i>
+              Quick Actions
+            </h2>
+          </div>
+          <div class="card-content">
+            <div class="quick-actions">
+              <a href="quiz.html" class="quick-action-btn primary">
+                <i class="fas fa-play"></i>
+                <span>Start Quiz</span>
+              </a>
+              <button class="quick-action-btn secondary" id="practiceWeakBtn">
+                <i class="fas fa-target"></i>
+                <span>Practice Weak Areas</span>
+              </button>
+              <button class="quick-action-btn tertiary" id="reviewBtn">
+                <i class="fas fa-history"></i>
+                <span>Review Mistakes</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity Card -->
+        <div class="dashboard-card activity-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-history"></i>
+              Recent Activity
+            </h2>
+            <button class="card-action">
+              <i class="fas fa-ellipsis-h"></i>
+            </button>
+          </div>
+          <div class="card-content">
+            <div id="recentActivity" class="activity-list"></div>
+          </div>
+        </div>
+
+        <!-- Achievements Card -->
+        <div class="dashboard-card achievements-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-medal"></i>
+              Recent Achievements
+            </h2>
+          </div>
+          <div class="card-content">
+            <div id="recentAchievements" class="achievements-list"></div>
+          </div>
+        </div>
+
+        <!-- Focus Areas Card -->
+        <div class="dashboard-card focus-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-bullseye"></i>
+              Focus Areas
+            </h2>
+          </div>
+          <div class="card-content">
+            <div id="recommendations" class="focus-areas"></div>
+          </div>
+        </div>
+
+        <!-- Learning Streak Card -->
+        <div class="dashboard-card streak-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-fire"></i>
+              Learning Streak
+            </h2>
+          </div>
+          <div class="card-content">
+            <div id="streakContainer" class="streak-container"></div>
+          </div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-clock"></i></div>
-        <div id="timePracticed" class="stat-value">0h</div>
-        <div class="stat-label">Time Practiced</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Topic Mastery</h2>
-      <div id="topicMastery"></div>
-    </div>
-
-    <div class="card">
-      <h2>Focus Areas</h2>
-      <div id="recommendations"></div>
-    </div>
-
-    <div class="card">
-      <h2>Recent Activity</h2>
-      <div id="recentActivity"></div>
-    </div>
-
-    <div class="card">
-      <h2>Recent Achievements</h2>
-      <div id="recentAchievements"></div>
-    </div>
-
-    <div class="card">
-      <h2>Learning Streak</h2>
-      <div id="streakContainer" class="streak-container"></div>
     </div>
   </main>
 
-  <footer class="footer">
-    <p>© 2025 CS Explorer. All rights reserved.</p>
-  </footer>
-
   <script src="script.js"></script>
+  
+  <!-- Dashboard Authentication and Debugging Script -->
+  <script>
+    // Check authentication on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Dashboard page loaded');
+      
+      // Small delay to ensure localStorage is set from login redirect
+      setTimeout(() => {
+        const userId = localStorage.getItem('userId');
+        const username = localStorage.getItem('username');
+        
+        console.log('Checking authentication...');
+        console.log('UserId:', userId);
+        console.log('Username:', username);
+        
+        if (!userId || !username) {
+          console.warn('User not authenticated, redirecting to login...');
+          alert('Please log in to access the dashboard');
+          window.location.href = 'index.html';
+          return;
+        }
+        
+        console.log('User authenticated successfully');
+        console.log('Loading dashboard data...');
+        
+        // Show a loading indicator
+        const body = document.body;
+        const loadingDiv = document.createElement('div');
+        loadingDiv.innerHTML = `
+          <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); color: white; display: flex; justify-content: center; align-items: center; z-index: 10000;">
+            <div style="text-align: center;">
+              <div style="font-size: 18px; margin-bottom: 10px;">Loading Dashboard...</div>
+              <div style="font-size: 14px;">Welcome back, ${username}!</div>
+            </div>
+          </div>
+        `;
+        body.appendChild(loadingDiv);
+        
+        // Remove loading after a short delay
+        setTimeout(() => {
+          loadingDiv.remove();
+        }, 2000);
+      }, 200);
+    });
+  </script>
 </body>
 </html>
