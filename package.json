@@ -6,13 +6,14 @@
   "scripts": {
     "start": "node backend/index.js",
     "dev": "nodemon backend/index.js",
-    "install-backend": "cd backend && npm install",
-    "build": "echo 'Build complete'"
+    "build": "cd backend && npm install && npm rebuild sqlite3",
+    "postinstall": "cd backend && npm install && npm rebuild sqlite3"
   },
   "keywords": ["education", "computer-science", "quiz", "learning"],
   "author": "CS Explorer Team",
   "license": "MIT",
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
   }
 }

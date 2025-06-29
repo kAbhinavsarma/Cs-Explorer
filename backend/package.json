@@ -1,20 +1,27 @@
 {
-  "name": "backend",
+  "name": "cs-explorer-backend",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
+    "build": "npm rebuild sqlite3",
+    "postinstall": "npm rebuild sqlite3",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": ["quiz", "education", "computer-science"],
+  "author": "CS Explorer Team",
+  "license": "MIT",
+  "description": "Backend for CS Explorer - Interactive Computer Science Learning Platform",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.14.1",
-    "sqlite3": "^5.1.7"
+    "better-sqlite3": "^8.7.0"
   }
 }

@@ -35,19 +35,16 @@ router.post('/register', async (req, res) => {
         
         // Insert user into DB with initial streak values
         const today = new Date().toISOString().split('T')[0];
-        db.run(
-          'INSERT INTO users (username, email, password_hash, last_active, streak_days) VALUES (?, ?, ?, ?, ?)',
-          [username, email, password_hash, today, 0],
-          function (err) {
-            if (err) {
-              console.error('Database error:', err);
-              return res.status(500).json({ error: 'Database error' });
-            }
-            const userId = this.lastID;
-            userWeakTopics[userId] = []; // Initialize for new user
-            res.json({ message: 'User registered successfully' });
-          }
-        );
+        try {
+          const stmt = db.prepare('INSERT INTO users (username, email, password_hash, last_active, streak_days) VALUES (?, ?, ?, ?, ?)');
+          const result = stmt.run(username, email, password_hash, today, 0);
+          const userId = result.lastInsertRowid;
+          userWeakTopics[userId] = []; // Initialize for new user
+          res.json({ message: 'User registered successfully' });
+        } catch (err) {
+          console.error('Database error:', err);
+          return res.status(500).json({ error: 'Database error' });
+        }
       }
     );
   } catch (error) {
