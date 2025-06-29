@@ -6,14 +6,14 @@
   "scripts": {
     "start": "node backend/index.js",
     "dev": "nodemon backend/index.js",
-    "build": "cd backend && npm install",
-    "postinstall": "cd backend && npm install"
+    "build": "cd backend && npm ci --production",
+    "postinstall": "cd backend && npm ci --production"
   },
   "keywords": ["education", "computer-science", "quiz", "learning"],
   "author": "CS Explorer Team",
   "license": "MIT",
   "engines": {
-    "node": ">=14.0.0",
-    "npm": ">=6.0.0"
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   }
 }
