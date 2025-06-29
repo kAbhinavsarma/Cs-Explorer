@@ -6,8 +6,7 @@
   "scripts": {
     "start": "node backend/index.js",
     "dev": "nodemon backend/index.js",
-    "build": "cd backend && npm ci --production",
-    "postinstall": "cd backend && npm ci --production"
+    "build": "cd backend && npm ci --production"
   },
   "keywords": ["education", "computer-science", "quiz", "learning"],
   "author": "CS Explorer Team",
