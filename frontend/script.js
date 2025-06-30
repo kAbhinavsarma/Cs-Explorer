@@ -869,6 +869,17 @@ async function updateDashboard() {
 function setupDashboardButtons() {
   console.log('Setting up dashboard buttons...');
   
+  // Notification bell event listener
+  const notificationBell = document.querySelector('.notification-bell');
+  if (notificationBell) {
+    notificationBell.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('Notification bell clicked');
+      showNotificationsModal();
+    });
+  }
+  
   // Quick action buttons
   const startQuizBtn = document.querySelector('a[href="quiz.html"]');
   if (startQuizBtn) {
@@ -983,6 +994,25 @@ function setupDashboardButtons() {
     });
   }
   
+  // Progress dropdown options
+  const viewBadges = document.getElementById('viewBadges');
+  if (viewBadges) {
+    viewBadges.addEventListener('click', function(e) {
+      e.preventDefault();
+      console.log('View badges clicked');
+      showBadgesModal();
+    });
+  }
+  
+  const viewStats = document.getElementById('viewStats');
+  if (viewStats) {
+    viewStats.addEventListener('click', function(e) {
+      e.preventDefault();
+      console.log('View stats clicked');
+      showStatsModal();
+    });
+  }
+  
   console.log('Dashboard buttons setup complete');
 }
 
@@ -991,6 +1021,23 @@ function calculateCurrentStreak() {
   const streak = localStorage.getItem('streak') || 0;
   console.log('Retrieved streak from localStorage:', streak);
   return parseInt(streak);
+}
+
+// Helper function to get achievement name
+function getAchievementName(achievementId) {
+  const achievementNames = {
+    'first_quiz': 'First Steps',
+    'quiz_streak_3': '3-Day Streak',
+    'quiz_streak_7': 'Week Warrior',
+    'quiz_streak_30': 'Month Master',
+    'perfect_score': 'Perfect Score',
+    'quiz_master': 'Quiz Master',
+    'algorithm_expert': 'Algorithm Expert',
+    'data_structure_pro': 'Data Structure Pro',
+    'quick_learner': 'Quick Learner',
+    'dedicated_learner': 'Dedicated Learner'
+  };
+  return achievementNames[achievementId] || 'Achievement';
 }
 
 // Utility functions for UI feedback and loading states
@@ -1112,17 +1159,41 @@ function createProgressNotifications(userId) {
   
   // Add welcome notification for new users
   if (storedNotifications.length === 0) {
-    newNotifications.push({
-      id: Date.now() + Math.random(),
-      icon: 'fa-hand-wave',
-      type: 'welcome',
-      title: 'Welcome to CS Explorer!',
-      message: 'Start your journey by taking your first quiz and earning achievements!',
-      time: 'Today',
-      action: 'Take Quiz',
-      actionFn: 'goToQuiz',
-      read: false
-    });
+    newNotifications.push(
+      {
+        id: Date.now() + Math.random(),
+        icon: 'fa-hand-wave',
+        type: 'welcome',
+        title: 'Welcome to CS Explorer!',
+        message: 'Start your journey by taking your first quiz and earning achievements!',
+        time: 'Just now',
+        action: 'Take Quiz',
+        actionFn: 'goToQuiz',
+        read: false
+      },
+      {
+        id: Date.now() + Math.random() + 1,
+        icon: 'fa-target',
+        type: 'tip',
+        title: 'Learning Tip',
+        message: 'Set a daily learning goal and maintain your streak for better retention!',
+        time: '2 minutes ago',
+        action: 'View Tips',
+        actionFn: 'viewTips',
+        read: false
+      },
+      {
+        id: Date.now() + Math.random() + 2,
+        icon: 'fa-trophy',
+        type: 'challenge',
+        title: 'Weekly Challenge',
+        message: 'Complete 5 quizzes this week to earn the "Dedicated Learner" badge!',
+        time: '1 hour ago',
+        action: 'Start Challenge',
+        actionFn: 'goToQuiz',
+        read: false
+      }
+    );
   }
   
   // Add new notifications to stored ones
@@ -1204,8 +1275,11 @@ function addStreakNotification(userId, streak) {
   }
 }
 
-// Missing notification functions
+// Notification functions
 function showNotificationsModal() {
+  const userId = localStorage.getItem('userId');
+  if (!userId) return;
+  
   // Create modal if it doesn't exist
   let modal = document.getElementById('notificationsModal');
   if (!modal) {
@@ -1216,24 +1290,30 @@ function showNotificationsModal() {
       <div class="modal-content">
         <div class="modal-header">
           <h3>Notifications</h3>
-          <button class="modal-close" onclick="hideNotificationsModal()">&times;</button>
+          <div class="modal-header-actions">
+            <button class="mark-all-read-btn" onclick="markAllNotificationsRead()">Mark All Read</button>
+            <button class="modal-close" onclick="hideNotificationsModal()">&times;</button>
+          </div>
         </div>
         <div class="modal-body">
           <div id="notificationsList">
-            <div class="notification-item">
-              <i class="fas fa-info-circle"></i>
-              <div>
-                <div class="notification-title">Welcome to CS Explorer!</div>
-                <div class="notification-text">Start your learning journey by taking your first quiz.</div>
-                <div class="notification-time">Just now</div>
-              </div>
-            </div>
+            <!-- Notifications will be populated here -->
           </div>
         </div>
       </div>
     `;
     document.body.appendChild(modal);
+    
+    // Add click outside to close functionality
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        hideNotificationsModal();
+      }
+    });
   }
+  
+  // Load and display notifications
+  loadNotifications();
   modal.style.display = 'flex';
 }
 
@@ -1244,11 +1324,395 @@ function hideNotificationsModal() {
   }
 }
 
-function updateNotificationBadge() {
-  const badge = document.querySelector('.notification-badge');
-  if (badge) {
-    // For now, show 1 notification (welcome message)
-    badge.textContent = '1';
-    badge.style.display = 'inline';
+function loadNotifications() {
+  const userId = localStorage.getItem('userId');
+  if (!userId) return;
+  
+  const notifications = JSON.parse(localStorage.getItem(`notifications_${userId}`) || '[]');
+  const notificationsList = document.getElementById('notificationsList');
+  
+  if (!notificationsList) return;
+  
+  if (notifications.length === 0) {
+    notificationsList.innerHTML = `
+      <div class="no-notifications">
+        <i class="fas fa-bell-slash"></i>
+        <p>No notifications yet</p>
+        <small>Complete activities to receive notifications</small>
+      </div>
+    `;
+    return;
+  }
+  
+  notificationsList.innerHTML = notifications.map((notification, index) => `
+    <div class="notification-item ${notification.read ? 'read' : 'unread'}" data-index="${index}">
+      <div class="notification-icon">
+        <i class="fas ${getNotificationIcon(notification.type)}"></i>
+      </div>
+      <div class="notification-content">
+        <div class="notification-title">${notification.title}</div>
+        <div class="notification-text">${notification.message}</div>
+        <div class="notification-time">${notification.time}</div>
+      </div>
+      <div class="notification-actions">
+        ${!notification.read ? `<button class="mark-read-btn" onclick="markNotificationRead(${index})" title="Mark as read"><i class="fas fa-check"></i></button>` : ''}
+        <button class="delete-notification-btn" onclick="deleteNotification(${index})" title="Delete"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function getNotificationIcon(type) {
+  switch(type) {
+    case 'streak': return 'fa-fire';
+    case 'achievement': return 'fa-trophy';
+    case 'reminder': return 'fa-clock';
+    case 'progress': return 'fa-chart-line';
+    case 'welcome': return 'fa-hand-wave';
+    default: return 'fa-info-circle';
   }
 }
+
+function markNotificationRead(index) {
+  const userId = localStorage.getItem('userId');
+  if (!userId) return;
+  
+  const notifications = JSON.parse(localStorage.getItem(`notifications_${userId}`) || '[]');
+  if (notifications[index]) {
+    notifications[index].read = true;
+    localStorage.setItem(`notifications_${userId}`, JSON.stringify(notifications));
+    loadNotifications();
+    updateNotificationBadge();
+  }
+}
+
+function markAllNotificationsRead() {
+  const userId = localStorage.getItem('userId');
+  if (!userId) return;
+  
+  const notifications = JSON.parse(localStorage.getItem(`notifications_${userId}`) || '[]');
+  notifications.forEach(notification => notification.read = true);
+  localStorage.setItem(`notifications_${userId}`, JSON.stringify(notifications));
+  loadNotifications();
+  updateNotificationBadge();
+}
+
+function deleteNotification(index) {
+  const userId = localStorage.getItem('userId');
+  if (!userId) return;
+  
+  const notifications = JSON.parse(localStorage.getItem(`notifications_${userId}`) || '[]');
+  notifications.splice(index, 1);
+  localStorage.setItem(`notifications_${userId}`, JSON.stringify(notifications));
+  loadNotifications();
+  updateNotificationBadge();
+}
+
+function updateNotificationBadge() {
+  const userId = localStorage.getItem('userId');
+  if (!userId) return;
+  
+  const badge = document.querySelector('.notification-badge');
+  if (!badge) return;
+  
+  const notifications = JSON.parse(localStorage.getItem(`notifications_${userId}`) || '[]');
+  const unreadCount = notifications.filter(n => !n.read).length;
+  
+  if (unreadCount > 0) {
+    badge.textContent = unreadCount;
+    badge.style.display = 'inline';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+// Function to show badges modal
+function showBadgesModal() {
+  const userId = localStorage.getItem('userId');
+  if (!userId) return;
+  
+  // Create modal if it doesn't exist
+  let modal = document.getElementById('badgesModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'badgesModal';
+    modal.className = 'modal';
+    modal.innerHTML = `
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Your Badges & Achievements</h3>
+          <button class="modal-close" onclick="hideBadgesModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div id="badgesList">
+            <div class="loading">Loading your badges...</div>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Add click outside to close functionality
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        hideBadgesModal();
+      }
+    });
+  }
+  
+  // Load and display badges
+  loadUserBadges();
+  modal.style.display = 'flex';
+}
+
+function hideBadgesModal() {
+  const modal = document.getElementById('badgesModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+async function loadUserBadges() {
+  const userId = localStorage.getItem('userId');
+  const badgesList = document.getElementById('badgesList');
+  
+  if (!badgesList) return;
+  
+  try {
+    const response = await fetch(getApiUrl('userBadges', `/${userId}`));
+    const data = await response.json();
+    
+    if (data.badges && data.badges.length > 0) {
+      badgesList.innerHTML = `
+        <div class="badges-grid">
+          ${data.badges.map(badge => `
+            <div class="badge-card earned">
+              <div class="badge-icon">
+                <i class="fas fa-medal"></i>
+              </div>
+              <div class="badge-info">
+                <h4>${badge.name || 'Achievement'}</h4>
+                <p>${badge.description || 'Great accomplishment!'}</p>
+                <small>Earned: ${new Date(badge.earned_at || Date.now()).toLocaleDateString()}</small>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="badge-stats">
+          <div class="stat-item">
+            <span class="stat-number">${data.badges.length}</span>
+            <span class="stat-label">Badges Earned</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">${Math.max(0, 10 - data.badges.length)}</span>
+            <span class="stat-label">To Unlock</span>
+          </div>
+        </div>
+      `;
+    } else {
+      badgesList.innerHTML = `
+        <div class="no-badges">
+          <i class="fas fa-medal"></i>
+          <h4>No badges yet</h4>
+          <p>Complete quizzes and maintain streaks to earn your first badge!</p>
+          <button onclick="hideBadgesModal(); window.location.href='quiz.html'" class="btn btn-primary">
+            Take Your First Quiz
+          </button>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('Error loading badges:', error);
+    badgesList.innerHTML = `
+      <div class="error-message">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>Failed to load badges. Please try again later.</p>
+      </div>
+    `;
+  }
+}
+
+// Function to show stats modal
+function showStatsModal() {
+  const userId = localStorage.getItem('userId');
+  if (!userId) return;
+  
+  // Create modal if it doesn't exist
+  let modal = document.getElementById('statsModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'statsModal';
+    modal.className = 'modal';
+    modal.innerHTML = `
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Your Learning Statistics</h3>
+          <button class="modal-close" onclick="hideStatsModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div id="statsList">
+            <div class="loading">Loading your statistics...</div>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Add click outside to close functionality
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        hideStatsModal();
+      }
+    });
+  }
+  
+  // Load and display stats
+  loadUserStats();
+  modal.style.display = 'flex';
+}
+
+function hideStatsModal() {
+  const modal = document.getElementById('statsModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+async function loadUserStats() {
+  const userId = localStorage.getItem('userId');
+  const statsList = document.getElementById('statsList');
+  
+  if (!statsList) return;
+  
+  try {
+    // Fetch user quiz history
+    const historyResponse = await fetch(getApiUrl('userHistory', `/${userId}`));
+    const quizHistory = await historyResponse.json();
+    
+    // Fetch weak topics
+    const weakResponse = await fetch(getApiUrl('userWeakTopics', `/${userId}`));
+    const weakData = await weakResponse.json();
+    
+    // Calculate statistics
+    const totalQuizzes = quizHistory.length;
+    const totalScore = quizHistory.reduce((sum, quiz) => sum + (quiz.score || 0), 0);
+    const totalQuestions = quizHistory.reduce((sum, quiz) => sum + (quiz.total_questions || 0), 0);
+    const averageScore = totalQuestions > 0 ? ((totalScore / totalQuestions) * 100).toFixed(1) : 0;
+    const totalTime = quizHistory.reduce((sum, quiz) => sum + (quiz.time_taken || 0), 0);
+    const perfectScores = quizHistory.filter(quiz => quiz.score === quiz.total_questions).length;
+    const currentStreak = calculateCurrentStreak();
+    
+    // Format time
+    const hours = Math.floor(totalTime / 3600);
+    const minutes = Math.floor((totalTime % 3600) / 60);
+    const timeStr = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+    
+    statsList.innerHTML = `
+      <div class="stats-grid">
+        <div class="stat-category">
+          <h4>Quiz Performance</h4>
+          <div class="stat-items">
+            <div class="stat-item">
+              <div class="stat-icon"><i class="fas fa-clipboard-check"></i></div>
+              <div class="stat-details">
+                <span class="stat-value">${totalQuizzes}</span>
+                <span class="stat-label">Total Quizzes</span>
+              </div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon"><i class="fas fa-percentage"></i></div>
+              <div class="stat-details">
+                <span class="stat-value">${averageScore}%</span>
+                <span class="stat-label">Average Score</span>
+              </div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon"><i class="fas fa-star"></i></div>
+              <div class="stat-details">
+                <span class="stat-value">${perfectScores}</span>
+                <span class="stat-label">Perfect Scores</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stat-category">
+          <h4>Learning Progress</h4>
+          <div class="stat-items">
+            <div class="stat-item">
+              <div class="stat-icon"><i class="fas fa-fire"></i></div>
+              <div class="stat-details">
+                <span class="stat-value">${currentStreak}</span>
+                <span class="stat-label">Current Streak</span>
+              </div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon"><i class="fas fa-clock"></i></div>
+              <div class="stat-details">
+                <span class="stat-value">${timeStr}</span>
+                <span class="stat-label">Time Practiced</span>
+              </div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon"><i class="fas fa-target"></i></div>
+              <div class="stat-details">
+                <span class="stat-value">${weakData.topics ? weakData.topics.length : 0}</span>
+                <span class="stat-label">Focus Areas</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        ${weakData.topics && weakData.topics.length > 0 ? `
+          <div class="stat-category">
+            <h4>Topic Performance</h4>
+            <div class="topic-performance-list">
+              ${weakData.topics.map(topic => {
+                const percentage = Math.round((topic.correct / topic.total) * 100);
+                return `
+                  <div class="topic-performance-item">
+                    <div class="topic-name">${topic.topic}</div>
+                    <div class="topic-score">
+                      <span>${topic.correct}/${topic.total}</span>
+                      <div class="topic-progress-bar">
+                        <div class="topic-progress-fill" style="width: ${percentage}%"></div>
+                      </div>
+                      <span>${percentage}%</span>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  } catch (error) {
+    console.error('Error loading stats:', error);
+    statsList.innerHTML = `
+      <div class="error-message">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>Failed to load statistics. Please try again later.</p>
+      </div>
+    `;
+  }
+}
+
+// Achievement system placeholder
+const achievementSystem = {
+  getProgress: function(userId) {
+    // Return mock achievement progress for now
+    return {
+      'first_quiz': { current: 1, target: 1 },
+      'quiz_streak_3': { current: calculateCurrentStreak(), target: 3 },
+      'quiz_streak_7': { current: calculateCurrentStreak(), target: 7 },
+      'quiz_streak_30': { current: calculateCurrentStreak(), target: 30 },
+      'perfect_score': { current: 0, target: 1 },
+      'quiz_master': { current: 0, target: 10 },
+      'algorithm_expert': { current: 0, target: 5 },
+      'data_structure_pro': { current: 0, target: 5 },
+      'quick_learner': { current: 0, target: 1 },
+      'dedicated_learner': { current: 0, target: 5 }
+    };
+  }
+};

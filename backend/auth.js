@@ -85,12 +85,13 @@ router.post('/login', async (req, res) => {
           return res.status(400).json({ error: 'Invalid credentials' });
         }
 
-        // Update streak
+        // Update streak logic - only update if different day
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const todayISO = today.toISOString().split('T')[0];
         
         let streak = user.streak_days || 0;
+        let shouldUpdateStreak = false;
         
         if (user.last_active) {
           const lastActive = new Date(user.last_active);
@@ -102,23 +103,28 @@ router.post('/login', async (req, res) => {
           if (diffDays === 0) {
             // Already active today, streak remains the same
             console.log('User already active today, streak remains:', streak);
+            shouldUpdateStreak = false;
           } else if (diffDays === 1) {
-            // Consecutive day
+            // Consecutive day, only increment if user hasn't been active today
             streak += 1;
             console.log('Consecutive day, streak increased to:', streak);
+            shouldUpdateStreak = true;
           } else if (diffDays > 1) {
-            // Missed days, reset streak
+            // Missed days, reset streak to 1 for today
             streak = 1;
             console.log('Missed days, streak reset to:', streak);
+            shouldUpdateStreak = true;
           } else {
             // This shouldn't happen (negative days), but reset to be safe
             streak = 1;
             console.log('Unexpected date difference, streak reset to:', streak);
+            shouldUpdateStreak = true;
           }
         } else {
           // First time user or no last_active date
           streak = 1;
           console.log('First time user, streak set to:', streak);
+          shouldUpdateStreak = true;
         }
 
         // Initialize weak topics if needed
@@ -126,24 +132,33 @@ router.post('/login', async (req, res) => {
           userWeakTopics[user.id] = [];
         }
 
-        // Update user's streak and last active
-        db.run(
-          'UPDATE users SET last_active = ?, streak_days = ? WHERE id = ?',
-          [todayISO, streak, user.id],
-          (err) => {
-            if (err) {
-              console.error('Update streak error:', err);
-              // Still return success but log the error
+        // Update user's streak and last active only if needed
+        if (shouldUpdateStreak) {
+          console.log('Updating user streak in database to:', streak);
+          db.run(
+            'UPDATE users SET last_active = ?, streak_days = ? WHERE id = ?',
+            [todayISO, streak, user.id],
+            (err) => {
+              if (err) {
+                console.error('Update streak error:', err);
+              }
+              res.json({ 
+                message: 'Login successful', 
+                userId: user.id, 
+                username: user.username,
+                streak
+              });
             }
-            // FIX: Added userId to response
-            res.json({ 
-              message: 'Login successful', 
-              userId: user.id, 
-              username: user.username,
-              streak
-            });
-          }
-        );
+          );
+        } else {
+          // No need to update database, just return current data
+          res.json({ 
+            message: 'Login successful', 
+            userId: user.id, 
+            username: user.username,
+            streak
+          });
+        }
       }
     );
   } catch (error) {
