@@ -44,7 +44,7 @@ Enjoy a modern, responsive design that works seamlessly across desktop and mobil
 - JSON Web Tokens for session management
 
 **Database Design**
-The application uses a well-structured SQLite database with tables for users, questions, quiz attempts, achievements, and learning analytics. This design ensures efficient data retrieval and maintains data integrity.
+The application uses a well-structured SQLite database with tables for users, questions, quiz attempts, achievements, and learning analytics. This design ensures efficient data retrieval and maintains data integrity
 
 ## Getting Started
 **Local Development Setup**
