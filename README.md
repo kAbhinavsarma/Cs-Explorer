@@ -1,108 +1,144 @@
-# CS Explorer - Interactive Computer Science Learning Platform
+# CS Explorer – Interactive Computer Science Learning Platform
 
-CS Explorer is a comprehensive web application designed to help students and professionals master computer science concepts through adaptive quizzes, personalized learning paths, and detailed progress tracking.
+[Live Demo](https://cs-explorer.onrender.com/)
 
-## About the Project
+CS Explorer is a web application designed to help students and professionals master computer science concepts through adaptive quizzes, personalized learning paths, and detailed progress tracking.
 
-Learning computer science can be challenging, especially when you're trying to identify your weak areas and focus your study efforts effectively. CS Explorer solves this problem by providing an intelligent learning platform that adapts to your knowledge level and learning patterns.
+---
 
-The platform analyzes your quiz performance in real-time, identifies topics where you need improvement, and creates personalized study recommendations. Whether you're preparing for technical interviews, studying for exams, or simply want to strengthen your CS fundamentals, CS Explorer provides the tools you need to succeed.
+## Table of Contents
 
-## Key Features
+- [About](#about)
+- [Features](#features)
+- [Technical Overview](#technical-overview)
+- [Getting Started](#getting-started)
+- [User Experience](#user-experience)
+- [Deployment](#deployment)
+- [Project Structure](#project-structure)
+- [Future Enhancements](#future-enhancements)
+- [Contributing](#contributing)
+- [Contact](#contact)
 
-**Adaptive Learning System**
-The platform uses intelligent algorithms to adjust question difficulty and topic selection based on your performance history. This ensures you're always challenged at the right level without being overwhelmed.
+---
 
-**Comprehensive Topic Coverage**
-Our question database covers essential computer science topics including algorithms, data structures, databases, operating systems, networking, software engineering, and more.
+## About
 
-**Real-time Progress Tracking**
-Monitor your learning journey with detailed analytics showing your strengths, weaknesses, quiz history, and improvement trends over time.
+Learning computer science can be challenging, especially when trying to identify and address weak areas efficiently. CS Explorer provides an adaptive learning platform that analyzes quiz performance in real-time, identifies areas for improvement, and offers personalized study recommendations. It is useful for technical interview preparation, academic learning, or strengthening CS fundamentals.
 
-**Achievement System**
-Stay motivated with our badge system that rewards consistent learning, perfect scores, topic mastery, and maintaining study streaks.
+---
 
-**Personalized Recommendations**
-Get targeted suggestions for topics to study based on your performance patterns and learning goals.
+## Features
 
-**Clean, Intuitive Interface**
-Enjoy a modern, responsive design that works seamlessly across desktop and mobile devices.
+- **Adaptive Learning:** Adjusts question difficulty and topic selection based on your performance history.
+- **Comprehensive Coverage:** Includes algorithms, data structures, databases, operating systems, networking, and software engineering.
+- **Progress Tracking:** Visual dashboards for strengths, weaknesses, quiz history, and trends.
+- **Achievements:** Badge system for consistent learning and topic mastery.
+- **Personalized Recommendations:** Targeted suggestions based on your progress.
+- **Responsive Design:** Works on both desktop and mobile devices.
 
-## Technical Architecture
+---
 
-**Frontend Technologies**
-- HTML for semantic markup and structure
-- CSS with modern features including Flexbox, Grid, and CSS animations
-- Vanilla JavaScript for interactive functionality and API communication
-- Responsive design principles for cross-device compatibility
+## Technical Overview
 
-**Backend Infrastructure**
-- Node.js runtime environment for server-side JavaScript
-- Express.js framework for routing and middleware management
-- SQLite database for efficient data storage and retrieval
-- bcrypt for secure password hashing and authentication
+### Frontend
+
+- HTML, CSS (Flexbox, Grid, animations)
+- Vanilla JavaScript for interactivity and API calls
+- Responsive design for cross-device compatibility
+
+### Backend
+
+- Node.js with Express.js
+- SQLite for lightweight, efficient data storage
+- bcrypt for secure authentication
 - JSON Web Tokens for session management
 
-**Database Design**
-The application uses a well-structured SQLite database with tables for users, questions, quiz attempts, achievements, and learning analytics. This design ensures efficient data retrieval and maintains data integrity
+### Database
+
+- Tables for users, questions, quiz attempts, achievements, and analytics
+- Ensures efficient data retrieval and integrity
+
+---
 
 ## Getting Started
-**Local Development Setup**
 
-1. Clone the repository to your local machine
-2. Navigate to the backend directory and install dependencies:
+### Local Setup
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
    ```
+2. Navigate to the backend and install dependencies:
+   ```bash
    cd backend
    npm install
    ```
 3. Start the development server:
-   ```
+   ```bash
    npm start
    ```
-4. Open your web browser and navigate to http://localhost:5000
-5. Create an account or log in to start using the platform
+4. Open [http://localhost:5000](http://localhost:5000) in your browser.
+5. Create an account or log in to begin.
 
-The application will automatically create the necessary database tables and seed initial question data on first run.
-
-## User Experience
-
-**Getting Started**
-New users begin by creating an account with a username and password. The platform immediately creates a personalized learning profile and presents a welcoming dashboard with initial learning recommendations.
-
-**Taking Quizzes**
-Users can choose from topic-specific quizzes or take comprehensive assessments covering multiple areas. Each question provides immediate feedback, and the system tracks response times and accuracy patterns.
-
-**Progress Monitoring**
-The dashboard provides comprehensive insights into learning progress, including quiz history, topic mastery levels, achievement badges earned, and personalized study recommendations.
-
-**Adaptive Learning**
-As users complete more quizzes, the platform learns their preferences and knowledge gaps, automatically adjusting future question selection to optimize learning efficiency.
-
-## Deployment
-
-The application is designed for easy deployment on modern cloud platforms. It includes configuration files for Render.com deployment, but can be adapted for other hosting services like Heroku, DigitalOcean, or AWS.
-
-**Environment Configuration**
-- PORT: Server port (default is 5000)
-- NODE_ENV: Environment mode (development or production)
-
-## Project Structure
-
-The codebase is organized into clear frontend and backend directories, with separation of concerns between authentication, quiz logic, database operations, and user interface components. This modular structure makes the code maintainable and allows for easy feature expansion.
-
-## Future Enhancements
-
-Planned improvements include advanced analytics dashboards, collaborative learning features, integration with external learning resources, mobile app development, and expanded question categories covering emerging technologies.
-
-## Contributing
-
-This project welcomes contributions from developers interested in educational technology. Whether you want to add new features, improve the user interface, expand the question database, or fix bugs, your contributions are valuable.
+The application will auto-create the required database tables and seed initial question data on the first run.
 
 ---
 
-**Contact Information**
-Developer: Sukhbodh Tripathi and K Abhinav Sarma
-Email: sukhbodhtripathi210@gmail.com/kabhinavsarma@gmail.com
+## User Experience
 
-For questions, suggestions, or collaboration opportunities, please reach out via email or create an issue in the project repository.
+- **Account Creation:** Users create an account with a username and password, generating a personalized learning profile.
+- **Quiz Interaction:** Topic-specific or comprehensive quizzes with immediate feedback and performance tracking.
+- **Progress Monitoring:** Dashboards showing quiz history, topic mastery, and achievements.
+- **Adaptive Learning:** The system dynamically adjusts future quizzes based on your knowledge gaps and strengths.
 
+---
+
+## Deployment
+
+The application is ready for deployment on platforms such as Render, Heroku, DigitalOcean, or AWS.
+
+### Configuration
+
+- `PORT`: Server port (default: 5000)
+- `NODE_ENV`: development or production
+
+---
+
+## Project Structure
+
+- **Frontend:** User interface and client-side logic.
+- **Backend:** API routes, authentication, quiz logic, and database operations.
+- **Database:** User data, quiz data, and progress analytics.
+
+The modular structure ensures maintainability and scalability.
+
+---
+
+## Future Enhancements
+
+- Advanced analytics dashboards
+- Collaborative learning features
+- Integration with external learning resources
+- Mobile app support
+- Expanded question categories
+
+---
+
+## Contributing
+
+Contributions are welcome to improve the platform, add features, enhance the UI, expand the question database, or resolve issues. Feel free to open issues or submit pull requests.
+
+---
+
+## Contact
+
+**Developers:**
+
+- Sukhbodh Tripathi – sukhbodhtripathi210@gmail.com
+- K Abhinav Sarma – kabhinavsarma@gmail.com
+
+For questions, suggestions, or collaboration, please reach out via email or open an issue in the repository.
+
+---
+
+[Live Demo](https://cs-explorer.onrender.com/)
