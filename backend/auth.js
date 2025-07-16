@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const db = require('./database');
 const { userWeakTopics } = require('./sharedData'); // Added shared import
 
-const JWT_SECRET = 'your-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Register route
 router.post('/register', async (req, res) => {

@@ -1,3 +1,5 @@
+// Load environment variables
+require('dotenv').config();
 // Import JWT middleware for possible use in main app
 const authenticateToken = require('./authenticateToken');
 const express = require('express');
@@ -9,7 +11,7 @@ const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = 'your-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Import quiz routes and configurations
 const quizRoutes = require('./quiz_new');
