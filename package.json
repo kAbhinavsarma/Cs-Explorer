@@ -1,34 +1,16 @@
 {
   "name": "cs-explorer",
   "version": "1.0.0",
-  "description": "CS Explorer - Interactive Computer Science Learning Platform",
-  "main": "backend/index.js",
+  "description": "<div align=\"center\">\r   <h1>CS Explorer</h1>\r   <p>\r     <b>Interactive Computer Science Quiz Platform</b><br>\r     Adaptive learning, detailed analytics, achievements, and more.\r   </p>\r   <p>\r     <img src=\"https://img.shields.io/badge/Node.js-Backend-green?logo=node.js\" alt=\"Node.js\">\r     <img src=\"https://img.shields.io/badge/Frontend-HTML%2FCSS%2FJS-blue\" alt=\"Frontend\">\r     <img src=\"https://img.shields.io/badge/SQLite-Database-lightgrey?logo=sqlite\">\r     <img src=\"https://img.shields.io/badge/License-MIT-yellow.svg\" alt=\"License\">\r   </p>\r </div>",
+  "main": "seed-questions.js",
   "scripts": {
     "start": "node backend/index.js",
-    "dev": "nodemon backend/index.js",
-    "build": "cd backend && npm ci --production"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [
-    "education",
-    "computer-science",
-    "quiz",
-    "learning"
-  ],
-  "author": "CS Explorer Team",
-  "license": "MIT",
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
-  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "bcrypt": "^5.1.1",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.0",
-    "express": "^4.18.2",
-    "jsonwebtoken": "^9.0.2",
-    "sqlite3": "^5.1.6"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.1"
+    "dotenv": "^17.2.0"
   }
 }
