@@ -6,7 +6,11 @@
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["quiz", "education", "computer-science"],
+  "keywords": [
+    "quiz",
+    "education",
+    "computer-science"
+  ],
   "author": "CS Explorer Team",
   "license": "MIT",
   "description": "Backend for CS Explorer - Interactive Computer Science Learning Platform",
@@ -19,6 +23,7 @@
     "cors": "2.8.5",
     "express": "4.18.2",
     "jsonwebtoken": "9.0.2",
+    "node-fetch": "^3.3.2",
     "sqlite3": "5.1.6"
   }
 }

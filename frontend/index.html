@@ -4,161 +4,580 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CS Explorer - Home</title>
-  <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-  <nav class="minimal-nav">
-    <div class="nav-container">
-      <a href="index.html" class="nav-brand">CS Explorer</a>
-    </div>
-  </nav>
-
-  <main class="main-container">
-    <!-- Hero Section -->
-    <section class="hero-section">
-      <div class="hero-content">
-        <div class="hero-text">
-          <h1 class="hero-title">Master Computer Science with <span class="gradient-text">CS Explorer</span></h1>
-          <p class="hero-subtitle">Elevate your programming skills with our adaptive learning platform. Take personalized quizzes, track your progress, and become a CS expert.</p>
-          <div class="hero-stats">
-            <div class="stat-item">
-              <span class="stat-number">50+</span>
-              <span class="stat-label">CS Topics</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-number">1000+</span>
-              <span class="stat-label">Questions</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-number">Adaptive</span>
-              <span class="stat-label">Learning</span>
-            </div>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <div class="navbar-logo">
+        <i class="fas fa-brain"></i>
+        <span class="navbar-title">CS Explorer</span>
+      </div>
+      <div class="navbar-links">
+        <div class="navbar-link-wrapper">
+          <a href="#features" class="navbar-link" id="features-link">Features</a>
+          <div class="navbar-popover" id="features-popover">
+            <strong>Quiz, Track, Achieve!</strong><br>
+            Explore quizzes, analytics, badges, and more.
           </div>
         </div>
-        <div class="hero-auth">
-          <div class="auth-tabs">
-            <button class="auth-tab active" data-tab="login">Sign In</button>
-            <button class="auth-tab" data-tab="signup">Create Account</button>
+        <div class="navbar-link-wrapper">
+          <a href="#" class="navbar-link" id="about-link">About</a>
+          <div class="navbar-popover" id="about-popover">
+            <strong>About CS Explorer</strong><br>
+            Built for mastering core CS concepts with fun and analytics.
           </div>
-          
-          <!-- Login Form -->
-          <div class="auth-form-container" id="loginTab">
-            <form id="loginForm" class="auth-form">
-              <div class="form-group">
-                <label for="loginUsername">Username</label>
-                <div class="input-wrapper">
-                  <i class="fas fa-user input-icon"></i>
-                  <input type="text" id="loginUsername" placeholder="Enter your username" required minlength="3">
-                  <div class="input-validation" id="loginUsernameError"></div>
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="loginPassword">Password</label>
-                <div class="input-wrapper">
-                  <i class="fas fa-lock input-icon"></i>
-                  <input type="password" id="loginPassword" placeholder="Enter your password" required minlength="6">
-                  <div class="input-validation" id="loginPasswordError"></div>
-                </div>
-              </div>
-              <button type="submit" class="btn btn-primary btn-full">
-                <i class="fas fa-sign-in-alt"></i>
-                Sign In to Dashboard
-              </button>
-            </form>
-          </div>
-
-          <!-- Signup Form -->
-          <div class="auth-form-container hidden" id="signupTab">
-            <form id="signupForm" class="auth-form">
-              <div class="form-group">
-                <label for="signupUsername">Username</label>
-                <div class="input-wrapper">
-                  <i class="fas fa-user input-icon"></i>
-                  <input type="text" id="signupUsername" placeholder="Choose a username" required minlength="3" maxlength="20">
-                  <div class="input-validation" id="signupUsernameError"></div>
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="signupEmail">Email Address</label>
-                <div class="input-wrapper">
-                  <i class="fas fa-envelope input-icon"></i>
-                  <input type="email" id="signupEmail" placeholder="Enter your email" required>
-                  <div class="input-validation" id="signupEmailError"></div>
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="signupPassword">Password</label>
-                <div class="input-wrapper">
-                  <i class="fas fa-lock input-icon"></i>
-                  <input type="password" id="signupPassword" placeholder="Create a password" required minlength="8">
-                  <div class="input-validation" id="signupPasswordError"></div>
-                </div>
-                <div class="password-strength">
-                  <div class="strength-bar">
-                    <div class="strength-fill" id="passwordStrength"></div>
-                  </div>
-                  <div class="strength-text" id="passwordStrengthText">Password strength</div>
-                </div>
-              </div>
-              <button type="submit" class="btn btn-success btn-full">
-                <i class="fas fa-user-plus"></i>
-                Create Account
-              </button>
-            </form>
+        </div>
+        <div class="navbar-link-wrapper">
+          <a href="#" class="navbar-link" id="contact-link">Contact</a>
+          <div class="navbar-popover" id="contact-popover">
+            <strong>Contact Us</strong><br>
+            Email: <a href="mailto:kabhinavsarma@gmail.com">kabhinavsarma@gmail.com</a><br>
+            Email: <a href="mailto:sukhbodhanandtripathi@gmail.com">sukhbodhanandtripathi@gmail.com</a><br>
+            Feedback? DM @csexplorer on X.
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </nav>
+  <main>
+    <div class="login-container">
+      <div class="hero-auth">
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-tab="login">Sign In</button>
+          <button class="auth-tab" data-tab="signup">Create Account</button>
+        </div>
+        <div class="auth-form-container" id="loginTab">
+          <form id="loginForm" class="auth-form">
+            <div class="form-group">
+              <label for="loginUsername">Username</label>
+              <div class="input-wrapper">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" id="loginUsername" placeholder="Enter your username" required minlength="3" autocomplete="username">
+              </div>
+              <div class="input-validation" id="loginUsernameError"></div>
+            </div>
+            <div class="form-group">
+              <label for="loginPassword">Password</label>
+              <div class="input-wrapper">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="loginPassword" placeholder="Enter your password" required minlength="6" autocomplete="current-password">
+              </div>
+              <div class="input-validation" id="loginPasswordError"></div>
+            </div>
+            <button type="submit" class="btn-primary">
+              <span class="btn-text">
+                <i class="fas fa-sign-in-alt"></i>
+                Sign In to Dashboard
+              </span>
+              <div class="btn-loader" style="display: none;">
+                <div class="spinner"></div>
+              </div>
+            </button>
+          </form>
+        </div>
+        <div class="auth-form-container hidden" id="signupTab">
+          <form id="signupForm" class="auth-form">
+            <div class="form-group">
+              <label for="signupUsername">Username</label>
+              <div class="input-wrapper">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" id="signupUsername" placeholder="Choose a username" required minlength="3" maxlength="20" autocomplete="username">
+              </div>
+              <div class="input-validation" id="signupUsernameError"></div>
+            </div>
+            <div class="form-group">
+              <label for="signupEmail">Email Address</label>
+              <div class="input-wrapper">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="signupEmail" placeholder="Enter your email" required autocomplete="email">
+              </div>
+              <div class="input-validation" id="signupEmailError"></div>
+            </div>
+            <div class="form-group">
+              <label for="signupPassword">Password</label>
+              <div class="input-wrapper">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="signupPassword" placeholder="Create a password" required minlength="8" autocomplete="new-password">
+              </div>
+              <div class="input-validation" id="signupPasswordError"></div>
+              <div class="password-strength">
+                <div class="strength-bar">
+                  <div class="strength-fill" id="passwordStrength"></div>
+                </div>
+                <div class="strength-text" id="passwordStrengthText">Password strength</div>
+              </div>
+            </div>
+            <button type="submit" class="btn-primary">
+              <span class="btn-text">
+                <i class="fas fa-user-plus"></i>
+                Create Account
+              </span>
+              <div class="btn-loader" style="display: none;">
+                <div class="spinner"></div>
+              </div>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <style>
+    .navbar-link-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .navbar-popover {
+      display: none;
+      position: absolute;
+      top: 120%;
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 210px;
+      background: rgba(255,255,255,0.98);
+      color: #22223b;
+      border-radius: 12px;
+      box-shadow: 0 6px 32px rgba(79,70,229,0.13);
+      padding: 1rem 1.2rem;
+      font-size: 1.08rem;
+      font-weight: 500;
+      z-index: 100;
+      white-space: pre-line;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.18s, transform 0.18s;
+    }
+    .navbar-link-wrapper:hover .navbar-popover,
+    .navbar-link:focus + .navbar-popover {
+      display: block;
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(4px) scale(1.03);
+    }
+    .navbar-popover strong {
+      color: #4f46e5;
+      font-size: 1.13em;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 0.3em;
+    }
+    /* --- Navbar --- */
+    .navbar {
+      width: 100%;
+      background: rgba(255,255,255,0.92);
+      box-shadow: 0 2px 16px rgba(79,70,229,0.07);
+      position: sticky;
+      top: 0;
+      left: 0;
+      z-index: 10;
+      padding: 0;
+      margin: 0 0 2.2rem 0;
+      border-bottom: 2.5px solid rgba(79,70,229,0.13);
+      backdrop-filter: blur(10px);
+      min-height: 84px;
+    }
+    .navbar-content {
+      max-width: 1300px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2.7rem;
+    }
+    .navbar-logo {
+      display: flex;
+      align-items: center;
+      gap: 1.1rem;
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: #4f46e5;
+      letter-spacing: 0.7px;
+    }
+    .navbar-logo i {
+      font-size: 2.2rem;
+      color: #6366f1;
+    }
+    .navbar-title {
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      font-weight: 900;
+      font-size: 1.55rem;
+      color: #4f46e5;
+    }
+    .navbar-links {
+      display: flex;
+      gap: 2.2rem;
+    }
+    .navbar-link {
+      color: #6366f1;
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 1.18rem;
+      padding: 0.55rem 1.2rem;
+      border-radius: 8px;
+      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+    }
+    .navbar-link:hover {
+      background: #e0e7ff;
+      color: #4f46e5;
+      box-shadow: 0 2px 12px rgba(99,102,241,0.10);
+    }
+    /* --- Modern Glassmorphic Redesign --- */
+    html, body {
+      height: 100%;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(180deg, #f5f7ff 0%, #e0e7ff 60%, #f8fafc 100%);
+      color: #22223b;
+      box-sizing: border-box;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .login-container {
+      background: rgba(255,255,255,0.97);
+      box-shadow: 0 12px 48px 0 rgba(99,102,241,0.10), 0 1.5px 0 rgba(99,102,241,0.04);
+      border-radius: 24px;
+      padding: 2.7rem 2.2rem 2.2rem 2.2rem;
+      max-width: 420px;
+      width: 100%;
+      margin: 2.5rem 0 0 0;
+      backdrop-filter: blur(16px);
+      border: 1.5px solid rgba(99,102,241,0.10);
+      position: relative;
+      flex: 0 0 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 2;
+      transition: box-shadow 0.2s, background 0.2s;
+    }
+    @media (max-width: 600px) {
+      .login-container {
+        padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+        max-width: 98vw;
+        border-radius: 14px;
+      }
+    }
+    main {
+      flex: 1 0 auto;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem 0 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    /* Duplicate .login-container removed for sticky footer fix */
+    .hero-auth {
+      width: 100%;
+    }
+    .auth-tabs {
+      display: flex;
+      background: #ede9fe;
+      border-radius: 12px;
+      padding: 6px;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(79,70,229,0.04);
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 0.85rem 1.2rem;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #4f46e5;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .auth-tab.active {
+      background: #fff;
+      color: #4f46e5;
+      box-shadow: 0 2px 8px rgba(79,70,229,0.08);
+    }
+    .auth-tab:not(.active):hover {
+      background: #e0e7ff;
+    }
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #a5b4fc;
+      font-size: 1.1rem;
+      pointer-events: none;
+    }
+    .auth-form input[type="text"],
+    .auth-form input[type="password"],
+    .auth-form input[type="email"] {
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      border-radius: 10px;
+      border: 1.5px solid #c7d2fe;
+      background: rgba(243,244,246,0.7);
+      font-size: 1rem;
+      color: #334155;
+      transition: border 0.2s;
+      width: 100%;
+    }
+    .auth-form input:focus {
+      border-color: #4f46e5;
+      outline: none;
+      background: #fff;
+    }
+    .btn-primary {
+      background: linear-gradient(90deg, #4f46e5 0%, #6366f1 100%);
+      color: #fff;
+      font-weight: 700;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 10px;
+      padding: 0.9rem 0;
+      margin-top: 0.5rem;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(79,70,229,0.08);
+      transition: background 0.2s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(90deg, #6366f1 0%, #4f46e5 100%);
+      transform: translateY(-2px) scale(1.02);
+    }
+    .btn-text {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-loader {
+      display: none;
+      margin-left: 0.5rem;
+    }
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid #e0e7ff;
+      border-top: 2px solid #4f46e5;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .input-validation {
+      font-size: 0.9rem;
+      color: #ef4444;
+      min-height: 1.1rem;
+      margin-left: 4px;
+    }
+    .password-strength {
+      margin-top: 0.25rem;
+    }
+    .strength-bar {
+      width: 100%;
+      height: 6px;
+      background: #e0e7ff;
+      border-radius: 4px;
+      margin-bottom: 0.25rem;
+    }
+    .strength-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #f59e0b, #4ade80);
+      width: 0;
+      transition: width 0.3s;
+    }
+    .strength-text {
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+    /* --- Features Section --- */
+    .features-section {
+      width: 100%;
+      min-width: 0;
+      background: rgba(255,255,255,0.85);
+      border-radius: 0;
+      box-shadow: 0 4px 24px rgba(79,70,229,0.07);
+      padding: 3.5rem 0 2.5rem 0;
+      margin: 0;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    @media (min-width: 700px) {
+      .features-section {
+        border-radius: 24px 24px 0 0;
+        padding-left: 2rem;
+        padding-right: 2rem;
+      }
+    }
+    /* Hide inactive tab content */
+    .auth-form-container {
+      display: none;
+    }
+    .auth-form-container.active {
+      display: block;
+    }
+    .section-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #4f46e5;
+      margin-bottom: 0.5rem;
+    }
+    .section-subtitle {
+      font-size: 1.1rem;
+      color: #64748b;
+      margin-bottom: 1.5rem;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+    .feature-card {
+      background: #f8fafc;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(79,70,229,0.04);
+      padding: 1.5rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow 0.2s, transform 0.1s;
+    }
+    .feature-card:hover {
+      box-shadow: 0 6px 24px rgba(79,70,229,0.10);
+      transform: translateY(-2px) scale(1.02);
+    }
+    .feature-icon {
+      font-size: 2.2rem;
+      color: #6366f1;
+      margin-bottom: 0.7rem;
+    }
+    .feature-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #22223b;
+      margin-bottom: 0.4rem;
+      text-align: center;
+    }
+    .feature-description {
+      font-size: 1rem;
+      color: #64748b;
+      text-align: center;
+    }
+    /* --- Footer --- */
+    .footer {
+      width: 100%;
+      background: linear-gradient(90deg, #f8fafc 0%, #e0e7ff 100%);
+      text-align: center;
+      color: #22223b;
+      font-size: 1.13rem;
+      padding: 1.2rem 0 1.2rem 0;
+      margin: 0;
+      box-shadow: 0 -2px 16px rgba(79,70,229,0.07);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-clip: padding-box;
+      border-top: 1.5px solid #e0e7ff;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1000;
+    }
+    .footer p {
+      width: 100%;
+      margin: 0;
+      text-align: center;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: #22223b;
+      text-shadow: 0 1px 2px #fff, 0 0.5px 0 #e0e7ff;
+      font-size: 1.2rem;
+    }
+    /* main padding-bottom removed for sticky footer */
+  </style>
 
     <!-- Features Section -->
     <section class="features-section">
       <div class="section-header">
-        <h2 class="section-title">Why Choose CS Explorer?</h2>
-        <p class="section-subtitle">Advanced features designed to accelerate your learning journey</p>
+        <h2 class="section-title">Why Choose CS Explorer</h2>
+        <p class="section-subtitle">Essential features to help you master computer science fundamentals</p>
       </div>
       <div class="features-grid">
         <div class="feature-card">
           <div class="feature-icon">
-            <i class="fas fa-brain"></i>
+            <i class="fas fa-question-circle"></i>
           </div>
-          <h3 class="feature-title">Adaptive Learning</h3>
-          <p class="feature-description">AI-powered quizzes that adapt to your skill level and learning pace for optimal knowledge retention.</p>
+          <h3 class="feature-title">Comprehensive Quizzes</h3>
+          <p class="feature-description">Test your knowledge with carefully crafted questions covering algorithms, data structures, databases, networking, and more.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
             <i class="fas fa-chart-line"></i>
           </div>
-          <h3 class="feature-title">Progress Analytics</h3>
-          <p class="feature-description">Detailed insights into your learning progress with topic mastery tracking and performance metrics.</p>
+          <h3 class="feature-title">Score Tracking</h3>
+          <p class="feature-description">Monitor your quiz performance and track your improvement over time with detailed scoring metrics.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
             <i class="fas fa-trophy"></i>
           </div>
-          <h3 class="feature-title">Achievement System</h3>
-          <p class="feature-description">Earn badges and maintain learning streaks as you master different computer science topics.</p>
+          <h3 class="feature-title">Achievement Badges</h3>
+          <p class="feature-description">Earn badges for perfect scores, speed completion, and other achievements to stay motivated.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <i class="fas fa-code"></i>
+            <i class="fas fa-book"></i>
           </div>
-          <h3 class="feature-title">Comprehensive Topics</h3>
-          <p class="feature-description">Cover algorithms, data structures, databases, networking, and more with expert-crafted questions.</p>
+          <h3 class="feature-title">Multiple Topics</h3>
+          <p class="feature-description">Study across 6 core computer science areas including algorithms, data structures, databases, and security.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
             <i class="fas fa-clock"></i>
           </div>
-          <h3 class="feature-title">Flexible Learning</h3>
-          <p class="feature-description">Learn at your own pace with timed quizzes and instant feedback on your performance.</p>
+          <h3 class="feature-title">Timed Challenges</h3>
+          <p class="feature-description">Practice under time pressure to simulate real exam conditions and improve your problem-solving speed.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <i class="fas fa-users"></i>
+            <i class="fas fa-user"></i>
           </div>
-          <h3 class="feature-title">Community Driven</h3>
-          <p class="feature-description">Join a community of learners and compete with others to enhance your motivation.</p>
+          <h3 class="feature-title">Personal Progress</h3>
+          <p class="feature-description">Keep track of your quiz attempts, scores, and areas where you need improvement with user profiles.</p>
         </div>
       </div>
     </section>
@@ -169,5 +588,31 @@
   </footer>
 
   <script src="script.js"></script>
+  <script>
+    // Tab switching logic for login/signup
+    document.addEventListener('DOMContentLoaded', function() {
+      const tabs = document.querySelectorAll('.auth-tab');
+      const containers = {
+        login: document.getElementById('loginTab'),
+        signup: document.getElementById('signupTab')
+      };
+      // Set initial state
+      containers.login.classList.add('active');
+      containers.signup.classList.remove('active');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          tabs.forEach(t => t.classList.remove('active'));
+          this.classList.add('active');
+          if (this.dataset.tab === 'login') {
+            containers.login.classList.add('active');
+            containers.signup.classList.remove('active');
+          } else {
+            containers.signup.classList.add('active');
+            containers.login.classList.remove('active');
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html>

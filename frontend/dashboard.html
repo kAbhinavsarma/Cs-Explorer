@@ -4,331 +4,1072 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CS Explorer - Dashboard</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/buttons.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/features.css">
+  <link rel="stylesheet" href="css/hero.css">
+  <link rel="stylesheet" href="css/footer.css">
+  <link rel="stylesheet" href="css/modals.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="quiz-config.js"></script>
 </head>
 <body>
-  <!-- Modern Sidebar -->
-  <nav class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-brand">
-        <i class="fas fa-graduation-cap"></i>
-        <span class="brand-text">CS Explorer</span>
-      </div>
-      <button class="sidebar-toggle" id="sidebarToggle">
-        <i class="fas fa-bars"></i>
-      </button>
-    </div>
-
-    <div class="sidebar-content">
-      <!-- User Profile -->
-      <div class="user-profile">
-        <div class="profile-avatar">
-          <i class="fas fa-user"></i>
-        </div>
-        <div class="profile-info">
-          <div class="profile-name" id="sidebarUsername">Student</div>
-          <div class="profile-status">Active Learner</div>
+  <!-- Navigation Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="logo">
+          <i class="fas fa-graduation-cap"></i>
+          <span>CS Explorer</span>
         </div>
       </div>
-
-      <!-- Navigation Menu -->
-      <ul class="sidebar-menu">
-        <li class="menu-item active">
-          <a href="dashboard.html" class="menu-link">
-            <i class="fas fa-tachometer-alt"></i>
-            <span class="menu-text">Dashboard</span>
-          </a>
-        </li>
-        <li class="menu-item">
-          <a href="quiz.html" class="menu-link">
-            <i class="fas fa-brain"></i>
-            <span class="menu-text">Take Quiz</span>
-          </a>
-        </li>
-        <li class="menu-item dropdown">
-          <div class="menu-link dropdown-toggle" data-dropdown="practice">
-            <i class="fas fa-dumbbell"></i>
-            <span class="menu-text">Practice</span>
-            <i class="fas fa-chevron-down dropdown-arrow"></i>
-          </div>
-          <ul class="dropdown-menu" id="practiceDropdown">
-            <li><a href="#" id="practiceWeakTopics"><i class="fas fa-target"></i> Weak Areas</a></li>
-            <li><a href="#" id="practiceByTopic"><i class="fas fa-list"></i> By Topic</a></li>
-            <li><a href="#" id="practiceRandom"><i class="fas fa-random"></i> Random</a></li>
-          </ul>
-        </li>
-        <li class="menu-item dropdown">
-          <div class="menu-link dropdown-toggle" data-dropdown="progress">
-            <i class="fas fa-chart-line"></i>
-            <span class="menu-text">Progress</span>
-            <i class="fas fa-chevron-down dropdown-arrow"></i>
-          </div>
-          <ul class="dropdown-menu" id="progressDropdown">
-            <li><a href="results.html"><i class="fas fa-history"></i> Quiz History</a></li>
-            <li><a href="#" id="viewBadges"><i class="fas fa-medal"></i> Badges</a></li>
-            <li><a href="#" id="viewStats"><i class="fas fa-analytics"></i> Statistics</a></li>
-          </ul>
-        </li>
-      </ul>
-
-      <!-- Quick Stats -->
-      <div class="sidebar-stats">
-        <h4>Quick Stats</h4>
-        <div class="quick-stat">
-          <i class="fas fa-fire"></i>
-          <span>Streak: <strong id="sidebarStreak">0</strong> days</span>
-        </div>
-        <div class="quick-stat">
+      <nav class="header-nav">
+        <a href="dashboard.html" class="nav-link active">
+          <i class="fas fa-home"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="quiz-selection-new.html" class="nav-link">
+          <i class="fas fa-brain"></i>
+          <span>Take Quiz</span>
+        </a>
+        <a href="history-new.html" class="nav-link">
+          <i class="fas fa-chart-line"></i>
+          <span>Progress</span>
+        </a>
+        <a href="results-new.html" class="nav-link">
           <i class="fas fa-trophy"></i>
-          <span>Rank: <strong>Beginner</strong></span>
-        </div>
-      </div>
-
-      <!-- Logout Button -->
-      <div class="sidebar-footer">
-        <button class="logout-btn" id="logoutBtn">
-          <i class="fas fa-sign-out-alt"></i>
-          <span class="menu-text">Logout</span>
-        </button>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Main Content Area -->
-  <main class="main-content" id="mainContent">
-    <!-- Top Bar -->
-    <header class="top-bar">
-      <div class="top-bar-left">
-        <h1 class="page-title">Dashboard</h1>
-        <p class="page-subtitle">Welcome back! Ready to continue learning?</p>
-      </div>
-      <div class="top-bar-right">
-        <div class="streak-display">
-          <div class="streak-icon">🔥</div>
-          <div class="streak-info">
-            <span class="streak-number" id="headerStreak">0</span>
-            <span class="streak-text">Day Streak</span>
-          </div>
-        </div>
-        <div class="notification-bell" onclick="showNotificationsModal()">
-          <i class="fas fa-bell"></i>
-          <span class="notification-badge" id="notificationBadge">3</span>
-        </div>
-      </div>
-    </header>
-
-    <!-- Dashboard Content -->
-    <div class="dashboard-content">
-      <!-- Stats Grid -->
-      <section class="stats-section">
-        <div class="stats-grid">
-          <div class="stat-card primary">
-            <div class="stat-background">
-              <i class="fas fa-clipboard-check"></i>
-            </div>
-            <div class="stat-content">
-              <div class="stat-value" id="quizzesCompleted">0</div>
-              <div class="stat-label">Quizzes Completed</div>
-              <div class="stat-trend">
-                <i class="fas fa-arrow-up"></i>
-                <span>+2 this week</span>
-              </div>
-            </div>
-          </div>
+          <span>Results</span>
+        </a>
+      </nav>
+      <div class="header-right">
+        <div class="user-menu">
+          <button class="user-avatar" id="userMenuBtn">
+            <i class="fas fa-user-circle"></i>
+            <span class="user-name" id="dashboardUsername">Student</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
           
-          <div class="stat-card success">
-            <div class="stat-background">
-              <i class="fas fa-star"></i>
-            </div>
-            <div class="stat-content">
-              <div class="stat-value" id="averageScore">0%</div>
-              <div class="stat-label">Average Score</div>
-              <div class="stat-trend">
-                <i class="fas fa-arrow-up"></i>
-                <span>+5% improvement</span>
-              </div>
-            </div>
-          </div>
-          
-          <div class="stat-card warning">
-            <div class="stat-background">
-              <i class="fas fa-trophy"></i>
-            </div>
-            <div class="stat-content">
-              <div class="stat-value" id="badgesEarned">0</div>
-              <div class="stat-label">Badges Earned</div>
-              <div class="stat-trend">
-                <i class="fas fa-medal"></i>
-                <span>Next: Algorithm Master</span>
-              </div>
-            </div>
-          </div>
-          
-          <div class="stat-card info">
-            <div class="stat-background">
-              <i class="fas fa-clock"></i>
-            </div>
-            <div class="stat-content">
-              <div class="stat-value" id="timePracticed">0h</div>
-              <div class="stat-label">Time Practiced</div>
-              <div class="stat-trend">
-                <i class="fas fa-calendar-week"></i>
-                <span>This week</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Dashboard Grid -->
-      <div class="dashboard-grid">
-        <!-- Topic Mastery Card -->
-        <div class="dashboard-card topic-mastery-card">
-          <div class="card-header">
-            <h2 class="card-title">
-              <i class="fas fa-brain"></i>
-              Topic Mastery
-            </h2>
-            <button class="card-action">
-              <i class="fas fa-external-link-alt"></i>
-            </button>
-          </div>
-          <div class="card-content">
-            <div id="topicMastery" class="topic-mastery-content"></div>
-          </div>
-        </div>
-
-        <!-- Quick Actions Card -->
-        <div class="dashboard-card quick-actions-card">
-          <div class="card-header">
-            <h2 class="card-title">
-              <i class="fas fa-bolt"></i>
-              Quick Actions
-            </h2>
-          </div>
-          <div class="card-content">
-            <div class="quick-actions">
-              <a href="quiz.html" class="quick-action-btn primary">
-                <i class="fas fa-play"></i>
-                <span>Start Quiz</span>
-              </a>
-              <button class="quick-action-btn secondary" id="practiceWeakBtn">
-                <i class="fas fa-target"></i>
-                <span>Practice Weak Areas</span>
-              </button>
-              <button class="quick-action-btn tertiary" id="reviewBtn">
-                <i class="fas fa-history"></i>
-                <span>Review Mistakes</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recent Activity Card -->
-        <div class="dashboard-card activity-card">
-          <div class="card-header">
-            <h2 class="card-title">
-              <i class="fas fa-history"></i>
-              Recent Activity
-            </h2>
-            <button class="card-action">
-              <i class="fas fa-ellipsis-h"></i>
-            </button>
-          </div>
-          <div class="card-content">
-            <div id="recentActivity" class="activity-list"></div>
-          </div>
-        </div>
-
-        <!-- Achievements Card -->
-        <div class="dashboard-card achievements-card">
-          <div class="card-header">
-            <h2 class="card-title">
-              <i class="fas fa-medal"></i>
-              Recent Achievements
-            </h2>
-          </div>
-          <div class="card-content">
-            <div id="recentAchievements" class="achievements-list"></div>
-          </div>
-        </div>
-
-        <!-- Focus Areas Card -->
-        <div class="dashboard-card focus-card">
-          <div class="card-header">
-            <h2 class="card-title">
-              <i class="fas fa-bullseye"></i>
-              Focus Areas
-            </h2>
-          </div>
-          <div class="card-content">
-            <div id="recommendations" class="focus-areas"></div>
-          </div>
-        </div>
-
-        <!-- Learning Streak Card -->
-        <div class="dashboard-card streak-card">
-          <div class="card-header">
-            <h2 class="card-title">
-              <i class="fas fa-fire"></i>
-              Learning Streak
-            </h2>
-          </div>
-          <div class="card-content">
-            <div id="streakContainer" class="streak-container"></div>
+          <div class="user-dropdown" id="userDropdown">
+            <a href="index.html" class="dropdown-item" id="logoutBtn">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </a>
           </div>
         </div>
       </div>
     </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Welcome Section -->
+    <section class="welcome-section">
+      <div class="welcome-card">
+        <div class="welcome-content">
+          <div class="welcome-text">
+            <h1>Welcome back, <span id="welcomeUsername"></span>!</h1>
+            <p>Ready to continue your Computer Science learning journey?</p>
+          </div>
+          <div class="welcome-stats">
+            <div class="stat-item">
+              <div class="stat-icon">
+                <i class="fas fa-fire"></i>
+              </div>
+              <div class="stat-details">
+                <span class="stat-number" id="streakDisplay">0</span>
+                <span id="streakLabel" class="stat-label">days</span>
+              </div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon">
+                <i class="fas fa-trophy"></i>
+              </div>
+              <div class="stat-details">
+                <span class="stat-number" id="totalQuizzesDisplay">0</span>
+                <span class="stat-label">Quizzes</span>
+              </div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon">
+                <i class="fas fa-star"></i>
+              </div>
+              <div class="stat-details">
+                <span class="stat-number" id="accuracyDisplay">0%</span>
+                <span class="stat-label">Average Score</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Actions Grid -->
+    <section class="actions-section">
+      <h2 class="section-title">Quick Actions</h2>
+      <div class="actions-grid">
+        <a href="quiz-selection-new.html" class="action-card primary">
+          <div class="action-icon">
+            <i class="fas fa-play"></i>
+          </div>
+          <div class="action-content">
+            <h3>Start New Quiz</h3>
+            <p>Test your knowledge with adaptive questions</p>
+          </div>
+          <div class="action-arrow">
+            <i class="fas fa-arrow-right"></i>
+          </div>
+        </a>
+        
+        <a href="quiz-new.html?mode=practice" class="action-card secondary">
+          <div class="action-icon">
+            <i class="fas fa-dumbbell"></i>
+          </div>
+          <div class="action-content">
+            <h3>Practice Mode</h3>
+            <p>Improve on your weak topics</p>
+          </div>
+          <div class="action-arrow">
+            <i class="fas fa-arrow-right"></i>
+          </div>
+        </a>
+        
+        <a href="history-new.html" class="action-card tertiary">
+          <div class="action-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <div class="action-content">
+            <h3>View Progress</h3>
+            <p>Check your learning analytics</p>
+          </div>
+          <div class="action-arrow">
+            <i class="fas fa-arrow-right"></i>
+          </div>
+        </a>
+        
+        <a href="results-new.html" class="action-card accent">
+          <div class="action-icon">
+            <i class="fas fa-history"></i>
+          </div>
+          <div class="action-content">
+            <h3>Recent Results</h3>
+            <p>Review your latest quiz performance</p>
+          </div>
+          <div class="action-arrow">
+            <i class="fas fa-arrow-right"></i>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Dashboard Grid -->
+    <section class="dashboard-grid">
+      <!-- Performance Overview -->
+      <div class="dashboard-card">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="fas fa-chart-bar"></i>
+            Performance Overview
+          </h3>
+          <a href="history-new.html" class="card-action" title="View detailed progress">
+            <i class="fas fa-external-link-alt"></i>
+          </a>
+        </div>
+        <div class="card-content">
+          <div class="performance-stats">
+            <div class="perf-stat">
+              <div class="perf-label">Total Quizzes</div>
+              <div class="perf-value" id="totalQuizzes">0</div>
+            </div>
+            <div class="perf-stat">
+              <div class="perf-label">Correct Answers</div>
+              <div class="perf-value" id="totalCorrect">0</div>
+            </div>
+            <div class="perf-stat">
+              <div class="perf-label">Questions Answered</div>
+              <div class="perf-value" id="totalQuestions">0</div>
+            </div>
+            <div class="perf-stat">
+              <div class="perf-label">Average Score</div>
+              <div class="perf-value" id="avgScore">0%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Topic Mastery -->
+      <div class="dashboard-card">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="fas fa-brain"></i>
+            Topic Mastery
+          </h3>
+          <a href="quiz-selection-new.html" class="card-action" title="Practice topics">
+            <i class="fas fa-play"></i>
+          </a>
+        </div>
+        <div class="card-content">
+          <div class="topic-list" id="topicMastery">
+            <div class="loading-message">
+              <i class="fas fa-spinner fa-spin"></i>
+              Loading topic data...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="dashboard-card">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="fas fa-clock"></i>
+            Recent Activity
+          </h3>
+          <a href="history-new.html" class="card-action" title="View all activity">
+            <i class="fas fa-list"></i>
+          </a>
+        </div>
+        <div class="card-content">
+          <div class="activity-timeline" id="recentActivity">
+            <div class="loading-message">
+              <i class="fas fa-spinner fa-spin"></i>
+              Loading recent activity...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Learning Recommendations -->
+      <div class="dashboard-card">
+        <div class="card-header">
+          <h3 class="card-title">
+            <span class="card-title-icon"><i class="fas fa-lightbulb"></i></span>
+            <span>Recommended for You</span>
+          </h3>
+          <a href="quiz-selection-new.html" class="card-action-btn" title="Start recommended quiz">
+            <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+        <div class="card-content">
+          <div class="recommendations" id="recommendations">
+            <div class="recommendation-item">
+              <div class="rec-icon">
+                <i class="fas fa-code"></i>
+              </div>
+              <div class="rec-content">
+                <h4>Practice Algorithms</h4>
+                <p>Improve your problem-solving skills with algorithm questions</p>
+                <a href="quiz-new.html?topic=Algorithms" class="rec-action">Start Practice</a>
+              </div>
+            </div>
+            
+            <div class="recommendation-item">
+              <div class="rec-icon">
+                <i class="fas fa-database"></i>
+              </div>
+              <div class="rec-content">
+                <h4>Database Concepts</h4>
+                <p>Strengthen your understanding of database management</p>
+                <a href="quiz-new.html?topic=Databases" class="rec-action">Start Practice</a>
+              </div>
+            </div>
+            
+            <div class="recommendation-item">
+              <div class="rec-icon">
+                <i class="fas fa-network-wired"></i>
+              </div>
+              <div class="rec-content">
+                <h4>Networking Fundamentals</h4>
+                <p>Learn about network protocols and architecture</p>
+                <a href="quiz-new.html?topic=Networking" class="rec-action">Start Practice</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Stats Bar -->
+    <section class="stats-bar">
+      <!-- The value for #todayQuizzes is set dynamically by script.js -->
+      <div class="stat-item">
+        <i class="fas fa-calendar-day"></i>
+        <span>Today: <strong id="todayQuizzes">0</strong> quizzes</span>
+      </div>
+      <div class="stat-item">
+        <i class="fas fa-clock"></i>
+        <span>Study time: <strong id="studyTime">0m</strong></span>
+      </div>
+      <div class="stat-item">
+        <i class="fas fa-target"></i>
+        <span>Best streak: <strong id="bestStreak">0</strong> <span id="bestStreakLabel"></span></span>
+      </div>
+      <div class="stat-item">
+        <i class="fas fa-medal"></i>
+        <span>Achievements: <strong id="achievementCount">0</strong></span>
+      </div>
+    </section>
   </main>
 
+  <!-- Floating Action Button for Quick Quiz -->
+  <div class="floating-action">
+    <a href="quiz-selection-new.html" class="fab" title="Quick Quiz">
+      <i class="fas fa-plus"></i>
+    </a>
+  </div>
+
+  <!-- JavaScript -->
   <script src="script.js"></script>
-  
-  <!-- Dashboard Authentication and Debugging Script -->
   <script>
-    // Check authentication on page load
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('Dashboard page loaded');
-      
-      // Small delay to ensure localStorage is set from login redirect
-      setTimeout(() => {
-        const userId = localStorage.getItem('userId');
-        const username = localStorage.getItem('username');
-        
-        console.log('Checking authentication...');
-        console.log('UserId:', userId);
-        console.log('Username:', username);
-        
-        if (!userId || !username) {
-          console.warn('User not authenticated, redirecting to login...');
-          alert('Please log in to access the dashboard');
-          window.location.href = 'index.html';
-          return;
-        }
-        
-        console.log('User authenticated successfully');
-        console.log('Loading dashboard data...');
-        
-        // Show a loading indicator
-        const body = document.body;
-        const loadingDiv = document.createElement('div');
-        loadingDiv.innerHTML = `
-          <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); color: white; display: flex; justify-content: center; align-items: center; z-index: 10000;">
-            <div style="text-align: center;">
-              <div style="font-size: 18px; margin-bottom: 10px;">Loading Dashboard...</div>
-              <div style="font-size: 14px;">Welcome back, ${username}!</div>
-            </div>
-          </div>
-        `;
-        body.appendChild(loadingDiv);
-        
-        // Remove loading after a short delay
-        setTimeout(() => {
-          loadingDiv.remove();
-        }, 2000);
-      }, 200);
-    });
+    if (typeof dashboard !== 'undefined' && typeof dashboard.init === 'function') {
+      dashboard.init();
+    }
   </script>
+  
+  <style>
+    /* Dashboard-specific styles */
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1rem 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    
+    .header-nav {
+      display: flex;
+      gap: 2rem;
+    }
+    
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+    
+    .nav-link:hover,
+    .nav-link.active {
+      color: white;
+      background: rgba(255,255,255,0.1);
+    }
+    
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .header-streak {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.1);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+    
+    .user-menu {
+      position: relative;
+    }
+    .user-avatar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: background 0.2s ease;
+    }
+    .user-avatar:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .user-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: white;
+      color: #333;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+      min-width: 150px;
+      pointer-events: none;
+    }
+    .user-menu:hover .user-dropdown,
+    .user-menu:focus-within .user-dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      text-decoration: none;
+      color: #333;
+      transition: background 0.2s ease;
+    }
+    .dropdown-item:hover {
+      background: #f8f9fa;
+    }
+    
+    .main-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      min-height: calc(100vh - 80px);
+    }
+    
+    .welcome-section {
+      margin-bottom: 3rem;
+    }
+    
+    .welcome-card {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    
+    .welcome-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    
+    .welcome-text h1 {
+      font-size: 2rem;
+      margin: 0 0 0.5rem 0;
+      color: #2d3748;
+    }
+    
+    .welcome-text p {
+      font-size: 1.1rem;
+      color: #4a5568;
+      margin: 0;
+    }
+    
+    .welcome-stats {
+      display: flex;
+      gap: 2rem;
+    }
+    
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(102, 126, 234, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #667eea;
+    }
+    
+    .stat-details {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .stat-number {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #2d3748;
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: #718096;
+    }
+    
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #2d3748;
+      margin: 0 0 1.5rem 0;
+    }
+    
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    
+    .action-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.5rem;
+      border-radius: 12px;
+      text-decoration: none;
+      color: white;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .action-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .action-card:hover::before {
+      opacity: 1;
+    }
+    
+    .action-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .action-card.primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .action-card.secondary {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    
+    .action-card.tertiary {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    .action-card.accent {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+    
+    .action-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    
+    .action-content {
+      flex: 1;
+    }
+    
+    .action-content h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    
+    .action-content p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 0.9rem;
+    }
+    
+    .action-arrow {
+      font-size: 1.2rem;
+    }
+    
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+    
+    .dashboard-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    
+    .card-header {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 1.5rem !important;
+      border-bottom: 1px solid #e2e8f0 !important;
+      background: #fff !important;
+    }
+
+    .card-title {
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.5rem !important;
+      margin: 0 !important;
+      font-size: 1.1rem !important;
+      font-weight: 600 !important;
+      color: #2d3748 !important;
+    }
+
+    .card-title-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #f5f7fa;
+      color: #667eea;
+      font-size: 1.2rem;
+      margin-right: 0.5rem;
+    }
+
+    .card-action-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #f5f7fa;
+      color: #667eea;
+      text-decoration: none;
+      font-size: 1.2rem;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+      border: none;
+      outline: none;
+      margin-left: 0.5rem;
+    }
+    .card-action-btn:hover {
+      background: #667eea;
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
+    }
+    
+    .card-action {
+      color: #667eea;
+      text-decoration: none;
+      padding: 0.5rem;
+      border-radius: 6px;
+      transition: background 0.2s ease;
+    }
+    
+    .card-action:hover {
+      background: #f7fafc;
+    }
+    
+    .card-content {
+      padding: 1.5rem;
+    }
+    
+    .loading-message {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #718096;
+      justify-content: center;
+      padding: 2rem;
+    }
+    
+    .performance-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+    }
+    
+    .perf-stat {
+      text-align: center;
+      padding: 1rem;
+      background: #f7fafc;
+      border-radius: 8px;
+    }
+    
+    .perf-label {
+      font-size: 0.9rem;
+      color: #718096;
+      margin-bottom: 0.5rem;
+    }
+    
+    .perf-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #2d3748;
+    }
+    
+    .recommendations {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .recommendation-item {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      padding: 1.2rem 1.5rem;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(102, 126, 234, 0.07);
+      border: 1px solid #e2e8f0;
+      transition: box-shadow 0.2s, border 0.2s, transform 0.2s;
+      position: relative;
+    }
+    .recommendation-item:hover {
+      box-shadow: 0 6px 24px rgba(102, 126, 234, 0.13);
+      border: 1.5px solid #667eea;
+      transform: translateY(-2px) scale(1.01);
+    }
+
+    .rec-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.10);
+      flex-shrink: 0;
+    }
+
+    .rec-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .rec-content h4 {
+      margin: 0 0 0.2rem 0;
+      font-size: 1.08rem;
+      color: #2d3748;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+    .rec-content p {
+      margin: 0 0 0.2rem 0;
+      font-size: 0.97rem;
+      color: #718096;
+      opacity: 0.95;
+    }
+
+    .rec-action {
+      align-self: flex-start;
+      font-size: 0.97rem;
+      color: #fff;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      text-decoration: none;
+      font-weight: 500;
+      padding: 0.45rem 1.1rem;
+      border-radius: 7px;
+      margin-top: 0.2rem;
+      box-shadow: 0 1px 4px rgba(102, 126, 234, 0.10);
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+    .rec-action:hover {
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.18);
+      text-decoration: none;
+    }
+    
+    .stats-bar {
+      display: flex;
+      justify-content: space-around;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .stats-bar .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #4a5568;
+    }
+    
+    .floating-action {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 1000;
+    }
+    
+    .fab {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+      transition: all 0.3s ease;
+    }
+    
+    .fab:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 25px rgba(102, 126, 234, 0.6);
+    }
+    
+    /* Topic Mastery Styles */
+    .topic-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 1rem;
+      background: #f7fafc;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    
+    .topic-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .topic-name {
+      font-weight: 600;
+      color: #2d3748;
+    }
+    
+    .topic-mastery {
+      padding: 0.25rem 0.5rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+    
+    .topic-mastery.beginner {
+      background: #fed7d7;
+      color: #c53030;
+    }
+    
+    .topic-mastery.intermediate {
+      background: #feebc8;
+      color: #dd6b20;
+    }
+    
+    .topic-mastery.advanced {
+      background: #c6f6d5;
+      color: #38a169;
+    }
+    
+    .topic-progress {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .progress-bar {
+      flex: 1;
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+    
+    .progress-text {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #4a5568;
+      min-width: 35px;
+    }
+    
+    .topic-stats {
+      font-size: 0.8rem;
+      color: #718096;
+    }
+    
+    /* Activity Timeline Styles */
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: #f7fafc;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    
+    .activity-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #667eea;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .activity-content {
+      flex: 1;
+    }
+    
+    .activity-title {
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 0.25rem;
+    }
+    
+    .activity-details {
+      font-size: 0.9rem;
+      color: #4a5568;
+      margin-bottom: 0.25rem;
+    }
+    
+    .activity-time {
+      font-size: 0.8rem;
+      color: #718096;
+    }
+    
+    .activity-score {
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 0.5rem;
+      border-radius: 6px;
+    }
+    
+    .activity-score.good {
+      background: #c6f6d5;
+      color: #38a169;
+    }
+    
+    .activity-score.needs-improvement {
+      background: #fed7d7;
+      color: #c53030;
+    }
+    
+    /* Empty State Styles */
+    .empty-state {
+      text-align: center;
+      padding: 2rem;
+      color: #718096;
+    }
+    
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+    
+    .empty-state p {
+      margin-bottom: 1rem;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .header-nav {
+        display: none;
+      }
+      
+      .welcome-content {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .welcome-stats {
+        justify-content: center;
+      }
+      
+      .main-content {
+        padding: 1rem;
+      }
+      
+      .actions-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .stats-bar {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
 </body>
 </html>

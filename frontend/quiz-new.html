@@ -1,0 +1,659 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS Explorer - Quiz</title>
+  <link rel="stylesheet" href="css/dashboard-clean.css">
+  <link rel="stylesheet" href="css/quiz.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Modern Quiz Options and Navigation - single source of truth */
+    .quiz-content-section .options,
+    .quiz-content-section .options-container {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100% !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      gap: 1.25rem !important;
+    }
+    .quiz-content-section .options-container label.option-item {
+      background: var(--gray-50) !important;
+      border: 2px solid var(--gray-200) !important;
+      border-radius: 18px !important;
+      padding: 1.25rem 1.5rem !important;
+      cursor: pointer !important;
+      transition: box-shadow 0.18s cubic-bezier(.4,2,.6,1), background 0.18s, border-color 0.18s, color 0.18s, transform 0.15s !important;
+      position: relative !important;
+      font-size: 1.08rem !important;
+      font-weight: 500 !important;
+      color: var(--gray-900) !important;
+      display: flex !important;
+      align-items: center !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+      margin-bottom: 1rem !important;
+      user-select: none !important;
+      box-shadow: 0 2px 8px 0 rgba(60,72,88,0.06) !important;
+    }
+    .quiz-content-section .options-container label.option-item:hover {
+      background: var(--gray-100) !important;
+      border-color: var(--primary) !important;
+      box-shadow: 0 4px 16px 0 rgba(79,70,229,0.10) !important;
+      transform: scale(1.025) !important;
+    }
+    .quiz-content-section .options-container label.option-item.selected {
+      background: linear-gradient(90deg, rgba(79,70,229,0.10) 0%, rgba(99,102,241,0.13) 100%) !important;
+      border-color: var(--primary) !important;
+      color: var(--primary) !important;
+      font-weight: 600 !important;
+      box-shadow: 0 6px 24px 0 rgba(79,70,229,0.13) !important;
+      transform: scale(1.03) !important;
+    }
+    .quiz-content-section .options-container label.option-item.selected::after {
+      content: "\2713" !important;
+      position: absolute !important;
+      top: 1rem !important;
+      right: 1.5rem !important;
+      width: 24px !important;
+      height: 24px !important;
+      background: var(--primary) !important;
+      color: white !important;
+      border-radius: 50% !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-size: 1.1rem !important;
+      font-weight: 700 !important;
+      box-shadow: 0 2px 8px 0 rgba(79,70,229,0.18) !important;
+    }
+    .quiz-content-section .options-container label.option-item input[type="radio"] {
+      position: absolute !important;
+      opacity: 0 !important;
+      width: 0 !important;
+      height: 0 !important;
+      pointer-events: none !important;
+    }
+    .stat-number,
+    .stat-item .stat-number,
+    .stat-item .stat-label,
+    #quizMode.stat-number, #quizMode {
+      color: var(--gray-900) !important;
+      font-weight: 700 !important;
+      opacity: 1 !important;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    .stat-label,
+    .stat-item .stat-label {
+      font-size: 0.875rem;
+      color: var(--gray-700) !important;
+      opacity: 1 !important;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    .option-label {
+      font-weight: 600;
+      color: var(--primary);
+      margin-right: 0.75rem;
+      font-size: 0.95rem;
+    }
+    .option-text {
+      color: var(--gray-800);
+      line-height: 1.5;
+    }
+
+    /* Question Navigation */
+    .quiz-navigation {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .nav-header {
+      margin-bottom: 1rem;
+    }
+    .nav-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 0.25rem;
+    }
+    .nav-subtitle {
+      font-size: 0.875rem;
+      color: var(--gray-600);
+    }
+    .question-shortcuts {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+      gap: 0.5rem;
+    }
+    .shortcut-btn {
+      width: 40px;
+      height: 40px;
+      border: 2px solid var(--gray-300);
+      background: var(--gray-50);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.95rem;
+      color: var(--gray-700);
+    }
+    .shortcut-btn:hover {
+      border-color: var(--primary);
+      background: rgba(79, 70, 229, 0.1);
+      color: var(--primary);
+    }
+    .shortcut-btn.current {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+    .shortcut-btn.answered {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+
+    /* Progress Section */
+    .progress-section {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .progress-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+
+    .progress-text {
+      font-size: 0.875rem;
+      color: var(--gray-600);
+    }
+
+    .quiz-progress-bar {
+      background: var(--gray-200);
+      border-radius: 8px;
+      height: 8px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      border-radius: 8px;
+      transition: width 0.3s ease;
+    }
+
+    .timer-section {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: var(--gray-50);
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+
+    .timer-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .timer-info h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 0.25rem;
+    }
+
+    .timer-display {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* Quiz Content */
+    .quiz-content-section {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      min-height: 400px;
+    }
+
+    .question-header {
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--gray-100);
+    }
+
+    .question-number {
+      color: var(--primary);
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .question-text {
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: var(--gray-900);
+      line-height: 1.6;
+    }
+
+
+    /* Navigation */
+    .quiz-navigation {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-header {
+      margin-bottom: 1rem;
+    }
+
+    .nav-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 0.25rem;
+    }
+
+    .nav-subtitle {
+      font-size: 0.875rem;
+      color: var(--gray-600);
+    }
+
+    .question-shortcuts {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+      gap: 0.5rem;
+    }
+
+    .shortcut-btn {
+      width: 40px;
+      height: 40px;
+      border: 2px solid var(--gray-300);
+      background: var(--gray-50);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+    }
+
+    .shortcut-btn:hover {
+      border-color: var(--primary);
+      background: rgba(79, 70, 229, 0.1);
+    }
+
+    .shortcut-btn.current {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    .shortcut-btn.answered {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+
+    /* Controls */
+    .quiz-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .control-group {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .control-btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+      font-size: 1rem;
+    }
+
+    .control-btn.primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .control-btn.primary:hover:not(:disabled) {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .control-btn.secondary {
+      background: white;
+      color: var(--gray-700);
+      border: 2px solid var(--gray-300);
+    }
+
+    .control-btn.secondary:hover:not(:disabled) {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .control-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .submit-btn {
+      background: var(--success);
+      color: white;
+      font-size: 1.1rem;
+      padding: 1rem 2rem;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      background: #059669;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+    }
+
+    /* Loading States */
+    .quiz-loading {
+      text-align: center;
+      padding: 3rem;
+      color: var(--gray-600);
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--gray-200);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .quiz-container {
+        padding: 1rem;
+      }
+
+      .quiz-header {
+        padding: 1.5rem;
+      }
+
+      .quiz-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .quiz-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .control-group {
+        order: 2;
+      }
+
+      .submit-btn {
+        order: 1;
+        width: 100%;
+        justify-content: center;
+      }
+
+      .question-shortcuts {
+        grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
+      }
+
+      .shortcut-btn {
+        width: 35px;
+        height: 35px;
+      }
+    }
+
+    /* Timer warning states */
+    .timer-warning {
+      color: #F59E0B !important;
+    }
+
+    .timer-danger {
+      color: #EF4444 !important;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="logo">
+          <i class="fas fa-graduation-cap"></i>
+          <span>CS Explorer</span>
+        </div>
+      </div>
+      
+      <nav class="header-nav">
+        <a href="dashboard.html" class="nav-link">
+          <i class="fas fa-home"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="quiz-selection-new.html" class="nav-link">
+          <i class="fas fa-brain"></i>
+          <span>Take Quiz</span>
+        </a>
+        <a href="history-new.html" class="nav-link">
+          <i class="fas fa-chart-line"></i>
+          <span>Progress</span>
+        </a>
+        <a href="results-new.html" class="nav-link">
+          <i class="fas fa-trophy"></i>
+          <span>Results</span>
+        </a>
+      </nav>
+      
+      <div class="header-right">
+        <div class="user-menu">
+          <button class="user-avatar" id="userMenuBtn">
+            <i class="fas fa-user-circle"></i>
+            <span class="user-name" id="dashboardUsername">Student</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          
+          <div class="user-dropdown" id="userDropdown">
+            <a href="index.html" class="dropdown-item" id="logoutBtn">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="quiz-container">
+      <!-- Quiz Header -->
+      <div class="quiz-header">
+        <h1 class="quiz-title">CS Explorer Quiz</h1>
+        <p class="quiz-subtitle">Test your knowledge and level up your skills</p>
+        <div class="quiz-stats">
+          <div class="stat-item">
+            <span class="stat-number" id="currentQuestion">1</span>
+            <span class="stat-label">of <span id="totalQuestions">10</span></span>
+          </div>
+         
+          
+          <div class="stat-item">
+            <span class="stat-number" id="quizMode">All Topics</span>
+            <span class="stat-label">Mode</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress Section -->
+      <div class="progress-section">
+        <div class="progress-header">
+          <span class="progress-title">Quiz Progress</span>
+          <span class="progress-text" id="progressPercentage">0% Complete</span>
+        </div>
+        <div class="quiz-progress-bar">
+          <div class="progress-fill" id="overallProgress"></div>
+        </div>
+        
+        <div class="timer-section">
+          <div class="timer-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="timer-info">
+            <h4>Time Left</h4>
+            <div class="timer-display" id="quizTimer">--:--</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz Content -->
+      <div class="quiz-content-section">
+        <div id="quizContent" class="quiz-content">
+          <div class="quiz-loading">
+            <div class="loading-spinner"></div>
+            <p>Loading questions...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question Navigation -->
+      <div class="quiz-navigation">
+        <div class="nav-header">
+          <h3 class="nav-title">Quick Navigation</h3>
+          <p class="nav-subtitle">Jump to any question</p>
+        </div>
+        <div id="questionShortcuts" class="question-shortcuts"></div>
+      </div>
+
+      <!-- Quiz Controls -->
+      <div class="quiz-controls">
+        <div class="control-group">
+          <button id="prevBtn" class="control-btn secondary" disabled>
+            <i class="fas fa-chevron-left"></i>
+            Previous
+          </button>
+          <button id="nextBtn" class="control-btn secondary">
+            Next
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+        <button id="submitQuizBtn" class="control-btn primary submit-btn">
+          <i class="fas fa-check-circle"></i>
+          Submit Quiz
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <script src="quiz-config.js"></script>
+  <script src="script.js"></script>
+  <script>
+    // Initialize quiz page functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      setupQuizPageEventListeners();
+    });
+
+    function setupQuizPageEventListeners() {
+      // User menu functionality
+      const userMenuBtn = document.getElementById('userMenuBtn');
+      const userDropdown = document.getElementById('userDropdown');
+      
+      if (userMenuBtn) {
+        userMenuBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          userDropdown.classList.toggle('show');
+        });
+      }
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', () => {
+        if (userDropdown) {
+          userDropdown.classList.remove('show');
+        }
+      });
+
+      // Logout functionality
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          logout();
+        });
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('currentUserId');
+      localStorage.removeItem('userId');
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>

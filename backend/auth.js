@@ -1,8 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const db = require('./database');
 const { userWeakTopics } = require('./sharedData'); // Added shared import
+
+const JWT_SECRET = 'your-secret-key-change-in-production';
 
 // Register route
 router.post('/register', async (req, res) => {
@@ -31,21 +34,27 @@ router.post('/register', async (req, res) => {
 
         // Hash password
         const salt = await bcrypt.genSalt(10);
-        const password_hash = await bcrypt.hash(password, salt);
+        const hashedPassword = await bcrypt.hash(password, salt);
         
-        // Insert user into DB with initial streak values
-        const today = new Date().toISOString().split('T')[0];
+        // Insert user into DB with enhanced schema fields
+        const today = new Date();
+        // Use local date to avoid timezone issues (consistent with login logic)
+        const todayISO = today.getFullYear() + '-' + 
+                        String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                        String(today.getDate()).padStart(2, '0');
         db.run(
-          'INSERT INTO users (username, email, password_hash, last_active, streak_days) VALUES (?, ?, ?, ?, ?)',
-          [username, email, password_hash, today, 0],
+          `INSERT INTO users (
+            username, email, password, last_active, streak_days, longest_streak
+          ) VALUES (?, ?, ?, ?, 0, 0)`,
+          [username, email, hashedPassword, todayISO],
           function (err) {
             if (err) {
               console.error('Database error:', err);
               return res.status(500).json({ error: 'Database error' });
             }
             const userId = this.lastID;
-            userWeakTopics[userId] = []; // Initialize for new user
-            res.json({ message: 'User registered successfully' });
+            userWeakTopics[userId] = [];
+            res.json({ message: 'User registered successfully', userId: userId });
           }
         );
       }
@@ -58,8 +67,10 @@ router.post('/register', async (req, res) => {
 
 // Login route
 router.post('/login', async (req, res) => {
+  ('🔐 Auth login request received:', req.body);
   try {
     if (!req.body) {
+      ('❌ No request body');
       return res.status(400).json({ error: 'Request body is missing' });
     }
 
@@ -80,50 +91,61 @@ router.post('/login', async (req, res) => {
           return res.status(400).json({ error: 'Invalid credentials' });
         }
 
-        const validPass = await bcrypt.compare(password, user.password_hash);
+        const validPass = await bcrypt.compare(password, user.password);
         if (!validPass) {
           return res.status(400).json({ error: 'Invalid credentials' });
         }
 
         // Update streak logic - only update if different day
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const todayISO = today.toISOString().split('T')[0];
+        // Use local date to avoid timezone issues
+        const todayISO = today.getFullYear() + '-' + 
+                        String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                        String(today.getDate()).padStart(2, '0');
         
         let streak = user.streak_days || 0;
         let shouldUpdateStreak = false;
         
         if (user.last_active) {
-          const lastActive = new Date(user.last_active);
-          lastActive.setHours(0, 0, 0, 0);
+          const lastActiveISO = user.last_active; // Already in YYYY-MM-DD format
           
-          // Calculate day difference (today - lastActive)
-          const diffDays = Math.floor((today - lastActive) / (24 * 60 * 60 * 1000));
+          // Parse dates correctly without timezone issues
+          const todayDate = new Date(todayISO + 'T00:00:00');
+          const lastActiveDate = new Date(lastActiveISO + 'T00:00:00');
+          
+          // Calculate day difference using local dates
+          const diffDays = Math.floor((todayDate - lastActiveDate) / (24 * 60 * 60 * 1000));
+          
+          ('Streak calculation:', {
+            today: todayISO,
+            lastActive: lastActiveISO,
+            diffDays: diffDays
+          });
           
           if (diffDays === 0) {
             // Already active today, streak remains the same
-            console.log('User already active today, streak remains:', streak);
+            ('User already active today, streak remains:', streak);
             shouldUpdateStreak = false;
           } else if (diffDays === 1) {
             // Consecutive day, only increment if user hasn't been active today
             streak += 1;
-            console.log('Consecutive day, streak increased to:', streak);
+            ('Consecutive day, streak increased to:', streak);
             shouldUpdateStreak = true;
           } else if (diffDays > 1) {
             // Missed days, reset streak to 1 for today
             streak = 1;
-            console.log('Missed days, streak reset to:', streak);
+            ('Missed days, streak reset to:', streak);
             shouldUpdateStreak = true;
           } else {
             // This shouldn't happen (negative days), but reset to be safe
             streak = 1;
-            console.log('Unexpected date difference, streak reset to:', streak);
+            ('Unexpected date difference, streak reset to:', streak);
             shouldUpdateStreak = true;
           }
         } else {
           // First time user or no last_active date
           streak = 1;
-          console.log('First time user, streak set to:', streak);
+          ('First time user, streak set to:', streak);
           shouldUpdateStreak = true;
         }
 
@@ -134,26 +156,49 @@ router.post('/login', async (req, res) => {
 
         // Update user's streak and last active only if needed
         if (shouldUpdateStreak) {
-          console.log('Updating user streak in database to:', streak);
-          db.run(
-            'UPDATE users SET last_active = ?, streak_days = ? WHERE id = ?',
-            [todayISO, streak, user.id],
-            (err) => {
-              if (err) {
-                console.error('Update streak error:', err);
-              }
-              res.json({ 
-                message: 'Login successful', 
-                userId: user.id, 
-                username: user.username,
-                streak
-              });
+          ('Updating user streak in database to:', streak);
+          
+          // Get current longest streak to compare
+          db.get('SELECT longest_streak FROM users WHERE id = ?', [user.id], (err, row) => {
+            if (err) {
+              console.error('Error fetching longest streak:', err);
             }
-          );
+            
+            const currentLongestStreak = row?.longest_streak || 0;
+            const newLongestStreak = Math.max(currentLongestStreak, streak);
+            
+            // Update both current streak and longest streak if needed
+            db.run(
+              'UPDATE users SET last_active = ?, streak_days = ?, longest_streak = ? WHERE id = ?',
+              [todayISO, streak, newLongestStreak, user.id],
+              (err) => {
+                if (err) {
+                  console.error('Update streak error:', err);
+                }
+                (`Updated streak: current=${streak}, longest=${newLongestStreak}`);
+                
+                // Generate JWT token
+                const token = jwt.sign({ userId: user.id, username: user.username }, JWT_SECRET, { expiresIn: '24h' });
+                
+                res.json({ 
+                  message: 'Login successful', 
+                  token,
+                  userId: user.id, 
+                  username: user.username,
+                  streak,
+                  longestStreak: newLongestStreak
+                });
+              }
+            );
+          });
         } else {
           // No need to update database, just return current data
+          // Generate JWT token
+          const token = jwt.sign({ userId: user.id, username: user.username }, JWT_SECRET, { expiresIn: '24h' });
+          
           res.json({ 
             message: 'Login successful', 
+            token,
             userId: user.id, 
             username: user.username,
             streak

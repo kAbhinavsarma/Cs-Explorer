@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS Explorer - Select Quiz Mode</title>
+  <link rel="stylesheet" href="css/dashboard-clean.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="quiz-config.js"></script>
+  <script src="script.js"></script>
+  <style>
+    /* Quiz Selection Specific Styles */
+    .quiz-selection-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .page-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      font-size: 1.125rem;
+      color: var(--gray-600);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .quiz-modes-section {
+      margin-bottom: 3rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-description {
+      color: var(--gray-600);
+      margin-bottom: 2rem;
+      font-size: 1rem;
+    }
+
+    .quiz-modes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .quiz-mode-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .quiz-mode-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      border-color: var(--primary);
+    }
+
+    .quiz-mode-card.priority {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(124, 58, 237, 0.05));
+    }
+
+    .quiz-mode-card.priority::before {
+      content: "Recommended";
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: var(--primary);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .mode-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      color: white;
+    }
+
+    .quiz-mode-card h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 0.75rem;
+    }
+
+    .quiz-mode-card p {
+      color: var(--gray-600);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .mode-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .feature-badge {
+      padding: 0.375rem 0.75rem;
+      background: var(--gray-100);
+      color: var(--gray-700);
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .select-mode-btn {
+      width: 100%;
+      padding: 0.75rem 1.5rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .select-mode-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .select-mode-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Topic Selection Modal */
+    .topic-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .topic-modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--gray-500);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+
+    .close-modal:hover {
+      background: var(--gray-100);
+      color: var(--gray-700);
+    }
+
+    .topics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .topic-btn {
+      padding: 1rem;
+      background: var(--gray-50);
+      border: 2px solid var(--gray-200);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+
+    .topic-btn:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .topic-btn h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .topic-btn p {
+      font-size: 0.875rem;
+      color: var(--gray-600);
+      margin: 0;
+    }
+
+    .topic-btn:hover p {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 2rem;
+      transition: color 0.2s ease;
+    }
+
+    .back-button:hover {
+      color: var(--primary-dark);
+    }
+
+    /* Quick Stats */
+    .quick-stats {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+
+    .quick-stats h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      opacity: 0.9;
+    }
+
+    @media (max-width: 768px) {
+      .quiz-selection-container {
+        padding: 1rem;
+      }
+
+      .quiz-modes-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .page-title {
+        font-size: 2rem;
+      }
+
+      .topics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="logo">
+          <i class="fas fa-graduation-cap"></i>
+          <span>CS Explorer</span>
+        </div>
+      </div>
+      
+      <nav class="header-nav">
+        <a href="dashboard.html" class="nav-link">
+          <i class="fas fa-home"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="quiz-selection-new.html" class="nav-link active">
+          <i class="fas fa-brain"></i>
+          <span>Take Quiz</span>
+        </a>
+        <a href="history-new.html" class="nav-link">
+          <i class="fas fa-chart-line"></i>
+          <span>Progress</span>
+        </a>
+        <a href="results-new.html" class="nav-link">
+          <i class="fas fa-trophy"></i>
+          <span>Results</span>
+        </a>
+      </nav>
+      
+      <div class="header-right">
+        <div class="user-menu">
+          <button class="user-avatar" id="userMenuBtn">
+            <i class="fas fa-user-circle"></i>
+            <span class="user-name" id="dashboardUsername">Student</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          
+          <div class="user-dropdown" id="userDropdown">
+            <a href="index.html" class="dropdown-item" id="logoutBtn">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="quiz-selection-container">
+      <a href="dashboard.html" class="back-button">
+        <i class="fas fa-arrow-left"></i>
+        Back to Dashboard
+      </a>
+
+      <div class="page-header">
+        <h1 class="page-title">
+          <i class="fas fa-brain"></i>
+          Choose Your Quiz Mode
+        </h1>
+        <p class="page-subtitle">
+          Select the perfect quiz type to match your learning goals and current skill level
+        </p>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="quick-stats" id="quickStats">
+        <h2>Your Learning Journey</h2>
+        <div class="stats-row">
+          <div class="stat-item">
+            <div class="stat-value" id="totalQuizzesStat">-</div>
+            <div class="stat-label">Quizzes Taken</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="averageScoreStat">-</div>
+            <div class="stat-label">Average Score</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="currentStreakStat">-</div>
+            <div class="stat-label">Current Streak</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="bestScoreStat">-</div>
+            <div class="stat-label">Best Score</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Beginner Options -->
+      <div class="quiz-modes-section">
+        <h2 class="section-title">
+          <i class="fas fa-seedling"></i>
+          Start Your Journey
+        </h2>
+        <p class="section-description">Perfect for first-time users or comprehensive practice</p>
+        
+        <div class="quiz-modes-grid">
+          <div class="quiz-mode-card" data-mode="all-topics">
+            <div class="mode-icon">
+              <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h3>All Topics Quiz</h3>
+            <p>Complete assessment covering all computer science topics. Perfect for getting a comprehensive overview of your knowledge and identifying areas for improvement.</p>
+            <div class="mode-features">
+              <span class="feature-badge">📚 Comprehensive</span>
+              <span class="feature-badge" id="allTopicsTime">⏱️20 mins</span>
+              <span class="feature-badge" id="allTopicsQuestions">🎯 20 questions</span>
+            </div>
+            <button class="select-mode-btn" data-mode="all-topics">
+              <i class="fas fa-play"></i>
+              Start All Topics Quiz
+            </button>
+          </div>
+
+          <div class="quiz-mode-card priority" data-mode="weak-areas-combined">
+            <div class="mode-icon">
+              <i class="fas fa-target"></i>
+            </div>
+            <h3>Focus on Weak Areas</h3>
+            <p>Intelligent quiz that focuses on your identified weak points. This personalized approach helps you improve where you need it most.</p>
+            <div class="mode-features">
+              <span class="feature-badge">🎯 Personalized</span>
+              <span class="feature-badge">⏱️ 10 mins</span>
+              <span class="feature-badge">🔍 Adaptive</span>
+            </div>
+            <button class="select-mode-btn" data-mode="weak-areas-combined">
+              <i class="fas fa-bullseye"></i>
+              Practice Weak Areas
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Focused Practice -->
+      <div class="quiz-modes-section">
+        <h2 class="section-title">
+          <i class="fas fa-focus"></i>
+          Focused Practice
+        </h2>
+        <p class="section-description">Target specific areas or challenge yourself with adaptive content</p>
+        
+        <div class="quiz-modes-grid">
+          <div class="quiz-mode-card" data-mode="topic-specific">
+            <div class="mode-icon">
+              <i class="fas fa-book"></i>
+            </div>
+            <h3>Topic-Specific Quiz</h3>
+            <p>Deep dive into a specific computer science topic. Choose from algorithms, data structures, networking, databases, and more.</p>
+            <div class="mode-features">
+              <span class="feature-badge">📖 Focused</span>
+              <span class="feature-badge">⏱️ 8 mins</span>
+              <span class="feature-badge">🎯 8-10 questions</span>
+            </div>
+            <button class="select-mode-btn" data-mode="topic-specific">
+              <i class="fas fa-list"></i>
+              Choose Topic
+            </button>
+          </div>
+
+          <div class="quiz-mode-card" data-mode="adaptive">
+            <div class="mode-icon">
+              <i class="fas fa-brain"></i>
+            </div>
+            <h3>Adaptive Learning</h3>
+            <p>Smart quiz that adjusts difficulty after every answer. Questions get harder or easier based on your responses, and are selected one at a time for a truly adaptive experience.</p>
+            <div class="mode-features">
+              <span class="feature-badge">🧠 Smart</span>
+              <span class="feature-badge">⏱️ 12 mins</span>
+              <span class="feature-badge">⚡ Dynamic</span>
+            </div>
+            <button class="select-mode-btn" data-mode="adaptive">
+              <i class="fas fa-magic"></i>
+              Start Adaptive Quiz
+            </button>
+            <div style="margin-top: 0.5rem; font-size: 0.95em; color: #6b7280;">
+              <i class="fas fa-info-circle"></i> Now powered by a true adaptive engine: each question is chosen based on your previous answers!
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Challenge Mode -->
+      <div class="quiz-modes-section">
+        <h2 class="section-title">
+          <i class="fas fa-trophy"></i>
+          Challenge Yourself
+        </h2>
+        <p class="section-description">Test your skills under pressure with timed challenges</p>
+        
+        <div class="quiz-modes-grid">
+          <div class="quiz-mode-card" data-mode="timed-challenge">
+            <div class="mode-icon">
+              <i class="fas fa-stopwatch"></i>
+            </div>
+            <h3>Timed Challenge</h3>
+            <p>Race against the clock! Fast-paced quiz designed to test your knowledge under time pressure. Perfect for exam preparation.</p>
+            <div class="mode-features">
+              <span class="feature-badge">⚡ Fast-paced</span>
+              <span class="feature-badge">⏱️ 5 mins</span>
+              <span class="feature-badge">🔥 Intense</span>
+            </div>
+            <button class="select-mode-btn" data-mode="timed-challenge">
+              <i class="fas fa-rocket"></i>
+              Start Challenge
+            </button>
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <!-- Topic Selection Modal -->
+  <div class="topic-modal" id="topicModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Select a Topic</h2>
+        <button class="close-modal" id="closeModal">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="topics-grid" id="topicsContainer">
+        <!-- Topics will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // Quiz Selection Page Logic
+  console.log('[QuizSelection] Inline script loaded');
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('[QuizSelection] DOMContentLoaded event fired');
+    loadUserStats();
+    setupEventListeners();
+    updateModeDetailsFromConfig();
+  });
+
+  // Returns the current user ID from localStorage (used for stats and quiz config)
+  function getCurrentUserId() {
+    // Try multiple possible keys for compatibility
+    return localStorage.getItem('currentUserId') || localStorage.getItem('userId') || null;
+  }
+
+  async function loadUserStats() {
+    const userId = getCurrentUserId();
+    if (!userId) return;
+
+    try {
+      const response = await authFetch(`/api/user-statistics/${userId}`);
+    // Make authFetch available if not already
+    if (typeof authFetch !== 'function') {
+      window.authFetch = async function(url, options = {}) {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          alert('Login required');
+          throw new Error('Login required');
+        }
+        const headers = options && options.headers ? { ...options.headers } : {};
+        headers['Authorization'] = `Bearer ${token}`;
+        return fetch(url, { ...options, headers });
+      };
+    }
+      if (response.ok) {
+        const stats = await response.json();
+        updateQuickStats(stats);
+        updateUsername(stats);
+      }
+    } catch (error) {
+      console.error('Error loading user stats:', error);
+    }
+  }
+
+  function updateQuickStats(stats) {
+    const basic = stats.basic || {};
+    const streak = stats.streak || {};
+
+    document.getElementById('totalQuizzesStat').textContent = basic.total_quizzes || 0;
+    document.getElementById('averageScoreStat').textContent = (basic.average_score || 0) + '%';
+    document.getElementById('currentStreakStat').textContent = streak.current_streak || 0;
+    document.getElementById('bestScoreStat').textContent = (basic.best_score || 0) + '%';
+  }
+
+  function updateUsername(stats) {
+    const username = stats.username || stats.basic?.username || 'Student';
+    const dashboardUsername = document.getElementById('dashboardUsername');
+    if (dashboardUsername) dashboardUsername.textContent = username;
+  }
+
+  function setupEventListeners() {
+    // User menu functionality
+    const userMenuBtn = document.getElementById('userMenuBtn');
+    const userDropdown = document.getElementById('userDropdown');
+    
+    if (userMenuBtn) {
+      userMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userDropdown.classList.toggle('show');
+      });
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', () => {
+      if (userDropdown) {
+        userDropdown.classList.remove('show');
+      }
+    });
+
+    // Quiz mode selection
+    const modeButtons = document.querySelectorAll('.select-mode-btn');
+    modeButtons.forEach((button, index) => {
+      button.addEventListener('click', function() {
+        const mode = this.getAttribute('data-mode');
+        console.log('[QuizSelection] Mode button clicked:', mode);
+        handleModeSelection(mode);
+      });
+    });
+
+    // Modal functionality
+    const topicModal = document.getElementById('topicModal');
+    const closeModal = document.getElementById('closeModal');
+    
+    if (closeModal) {
+      closeModal.addEventListener('click', () => {
+        topicModal.classList.remove('show');
+      });
+    }
+
+    if (topicModal) {
+      topicModal.addEventListener('click', (e) => {
+        if (e.target === topicModal) {
+          topicModal.classList.remove('show');
+        }
+      });
+    }
+
+    // Logout functionality
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        logout();
+      });
+    }
+  }
+
+  function handleModeSelection(mode) {
+    console.log('[QuizSelection] handleModeSelection called with mode:', mode);
+    if (mode === 'topic-specific') {
+      showTopicModal();
+    } else {
+      startQuizWithMode(mode);
+    }
+  }
+
+  function showTopicModal() {
+    const modal = document.getElementById('topicModal');
+    const container = document.getElementById('topicsContainer');
+    // Available topics
+    const topics = [
+      { id: 'Algorithms', name: 'Algorithms', description: 'Sorting, searching, complexity analysis' },
+      { id: 'Data Structures', name: 'Data Structures', description: 'Arrays, trees, graphs, hash tables' },
+      { id: 'Databases', name: 'Databases', description: 'SQL, NoSQL, database design' },
+      { id: 'Networking', name: 'Networking', description: 'Protocols, architecture, security' },
+      { id: 'Operating Systems', name: 'Operating Systems', description: 'Processes, memory, file systems' },
+      { id: 'Security', name: 'Security', description: 'Cryptography, authentication, threats' }
+    ];
+
+    container.innerHTML = topics.map(topic => `
+      <div class="topic-btn" data-topic="${topic.id}">
+        <h4>${topic.name}</h4>
+        <p>${topic.description}</p>
+      </div>
+    `).join('');
+
+    // Add event listeners to topic buttons
+    container.querySelectorAll('.topic-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const selectedTopic = this.getAttribute('data-topic');
+        modal.classList.remove('show');
+        startQuizWithMode('topic-specific', selectedTopic);
+      });
+    });
+
+    modal.classList.add('show');
+  }
+
+  function startQuizWithMode(mode, selectedTopic = null) {
+    console.log('[QuizSelection] startQuizWithMode called:', { mode, selectedTopic });
+    // Store quiz configuration, including questionCount for backend
+    let questionCount = QUIZ_CONFIG && QUIZ_CONFIG.questionCounts && QUIZ_CONFIG.questionCounts[mode] ? QUIZ_CONFIG.questionCounts[mode] : 10;
+    const config = {
+      mode: mode,
+      userId: getCurrentUserId(),
+      selectedTopic: selectedTopic,
+      questionCount: questionCount
+    };
+    console.log('[QuizSelection] Saving quizConfig to localStorage:', config);
+    localStorage.setItem('quizConfig', JSON.stringify(config));
+    // Navigate to quiz page
+    window.location.href = 'quiz-new.html';
+  }
+
+  function logout() {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('currentUserId');
+    localStorage.removeItem('userId');
+    window.location.href = 'index.html';
+  }
+
+  // Dynamically update mode details (time and questions) from QUIZ_CONFIG
+  function updateModeDetailsFromConfig() {
+    if (typeof QUIZ_CONFIG !== 'object' || !QUIZ_CONFIG.timeLimits || !QUIZ_CONFIG.questionCounts) return;
+    // All Topics
+    const allTopicsTime = document.getElementById('allTopicsTime');
+    const allTopicsQuestions = document.getElementById('allTopicsQuestions');
+    if (allTopicsTime) allTopicsTime.textContent = `⏱️ ${QUIZ_CONFIG.timeLimits['all-topics'] / 60} mins`;
+    if (allTopicsQuestions) allTopicsQuestions.textContent = `🎯 ${QUIZ_CONFIG.questionCounts['all-topics']} questions`;
+
+    // Weak Areas
+    const weakAreasCard = document.querySelector('.quiz-mode-card[data-mode="weak-areas-combined"]');
+    if (weakAreasCard) {
+      const badges = weakAreasCard.querySelectorAll('.feature-badge');
+      if (badges.length > 1) badges[1].textContent = `⏱️ ${QUIZ_CONFIG.timeLimits['weak-areas-combined'] / 60} mins`;
+    }
+
+    // Topic Specific
+    const topicCard = document.querySelector('.quiz-mode-card[data-mode="topic-specific"]');
+    if (topicCard) {
+      const badges = topicCard.querySelectorAll('.feature-badge');
+      if (badges.length > 1) badges[1].textContent = `⏱️ ${QUIZ_CONFIG.timeLimits['topic-specific'] / 60} mins`;
+      if (badges.length > 2) badges[2].textContent = `🎯 8-10 questions`;
+    }
+
+    // Adaptive
+    const adaptiveCard = document.querySelector('.quiz-mode-card[data-mode="adaptive"]');
+    if (adaptiveCard) {
+      const badges = adaptiveCard.querySelectorAll('.feature-badge');
+      if (badges.length > 1) badges[1].textContent = `⏱️ ${QUIZ_CONFIG.timeLimits['adaptive'] / 60} mins`;
+    }
+
+    // Timed Challenge
+    const timedCard = document.querySelector('.quiz-mode-card[data-mode="timed-challenge"]');
+    if (timedCard) {
+      const badges = timedCard.querySelectorAll('.feature-badge');
+      if (badges.length > 1) badges[1].textContent = `⏱️ ${QUIZ_CONFIG.timeLimits['timed-challenge'] / 60} mins`;
+    }
+  }
+</script>
+</body>
+</html>

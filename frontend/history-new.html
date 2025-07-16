@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS Explorer - Quiz History</title>
+  <link rel="stylesheet" href="css/dashboard-clean.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="quiz-config.js"></script>
+  <style>
+    /* Additional styles for history page */
+    .history-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .page-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      font-size: 1.125rem;
+      color: var(--gray-600);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .stats-overview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      text-align: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 1.5rem;
+      color: white;
+    }
+
+    .stat-icon.primary { background: linear-gradient(135deg, #4F46E5, #7C3AED); }
+    .stat-icon.success { background: linear-gradient(135deg, #10B981, #059669); }
+    .stat-icon.warning { background: linear-gradient(135deg, #F59E0B, #D97706); }
+    .stat-icon.info { background: linear-gradient(135deg, #3B82F6, #1D4ED8); }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: var(--gray-600);
+      font-weight: 500;
+    }
+
+    .history-section {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .filter-tab {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--gray-300);
+      border-radius: 8px;
+      background: white;
+      color: var(--gray-600);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-tab:hover {
+      background: var(--gray-50);
+      border-color: var(--gray-400);
+    }
+
+    .filter-tab.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .quiz-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .quiz-item {
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.2s ease;
+      background: var(--gray-50);
+    }
+
+    .quiz-item:hover {
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
+    }
+
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .quiz-info h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 0.25rem;
+    }
+
+    .quiz-meta {
+      font-size: 0.875rem;
+      color: var(--gray-600);
+    }
+
+    .quiz-score {
+      text-align: right;
+    }
+
+    .score-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .score-value.excellent { color: #10B981; }
+    .score-value.good { color: #3B82F6; }
+    .score-value.average { color: #F59E0B; }
+    .score-value.poor { color: #EF4444; }
+
+    .score-label {
+      font-size: 0.75rem;
+      color: var(--gray-600);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .quiz-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--gray-200);
+    }
+
+    .detail-item {
+      text-align: center;
+    }
+
+    .detail-value {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      display: block;
+    }
+
+    .detail-label {
+      font-size: 0.75rem;
+      color: var(--gray-600);
+      margin-top: 0.25rem;
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--gray-600);
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--gray-200);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--gray-600);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      color: var(--gray-400);
+      margin-bottom: 1rem;
+    }
+
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 2rem;
+      transition: color 0.2s ease;
+    }
+
+    .back-button:hover {
+      color: var(--primary-dark);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="logo">
+          <i class="fas fa-graduation-cap"></i>
+          <span>CS Explorer</span>
+        </div>
+      </div>
+      
+      <nav class="header-nav">
+        <a href="dashboard.html" class="nav-link">
+          <i class="fas fa-home"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="quiz-selection-new.html" class="nav-link">
+          <i class="fas fa-brain"></i>
+          <span>Take Quiz</span>
+        </a>
+        <a href="history-new.html" class="nav-link active">
+          <i class="fas fa-chart-line"></i>
+          <span>Progress</span>
+        </a>
+        <a href="results-new.html" class="nav-link">
+          <i class="fas fa-trophy"></i>
+          <span>Results</span>
+        </a>
+      </nav>
+      
+      <div class="header-right">
+        <div class="user-menu">
+          <button class="user-avatar" id="userMenuBtn">
+            <i class="fas fa-user-circle"></i>
+            <span class="user-name" id="dashboardUsername">Student</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          
+          <div class="user-dropdown" id="userDropdown">
+            <a href="index.html" class="dropdown-item" id="logoutBtn">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="history-container">
+      <a href="dashboard.html" class="back-button">
+        <i class="fas fa-arrow-left"></i>
+        Back to Dashboard
+      </a>
+
+      <div class="page-header">
+        <h1 class="page-title">
+          <i class="fas fa-chart-line"></i>
+          Quiz History
+        </h1>
+        <p class="page-subtitle">
+          Track your learning progress and review your performance over time
+        </p>
+      </div>
+
+      <!-- Statistics Overview -->
+      <div class="stats-overview" id="statsOverview">
+        <div class="stat-card">
+          <div class="stat-icon primary">
+            <i class="fas fa-clipboard-list"></i>
+          </div>
+          <div class="stat-value" id="totalQuizzesStat">-</div>
+          <div class="stat-label">Total Quizzes</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon success">
+            <i class="fas fa-percentage"></i>
+          </div>
+          <div class="stat-value" id="averageScoreStat">-</div>
+          <div class="stat-label">Average Score</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon warning">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-value" id="totalTimeStat">-</div>
+          <div class="stat-label">Total Time Spent</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon info">
+            <i class="fas fa-fire"></i>
+          </div>
+          <div class="stat-value" id="currentStreakStat">-</div>
+          <div class="stat-label">Current Streak</div>
+        </div>
+      </div>
+
+      <!-- Quiz History Section -->
+      <div class="history-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fas fa-history"></i>
+            Recent Quizzes
+          </h2>
+          <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">All Quizzes</button>
+            <button class="filter-tab" data-filter="passed">Passed (70%+)</button>
+            <button class="filter-tab" data-filter="failed">Need Improvement</button>
+          </div>
+        </div>
+
+        <div class="quiz-list" id="quizList">
+          <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Loading your quiz history...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    // History page specific functionality
+    class HistoryPage {
+      constructor() {
+        this.currentFilter = 'all';
+        this.quizzes = [];
+        this.init();
+      }
+
+      init() {
+        this.setupEventListeners();
+        this.loadData();
+      }
+
+      setupEventListeners() {
+        // Filter tabs
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+          tab.addEventListener('click', (e) => {
+            this.handleFilterChange(e.target.dataset.filter);
+          });
+        });
+
+        // User menu functionality
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        
+        if (userMenuBtn) {
+          userMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('show');
+          });
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => {
+          if (userDropdown) {
+            userDropdown.classList.remove('show');
+          }
+        });
+
+        // Logout functionality
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.logout();
+          });
+        }
+      }
+
+      async loadData() {
+        const userId = getCurrentUserId();
+        if (!userId) {
+          console.error('No user ID found');
+          return;
+        }
+
+        try {
+          await Promise.all([
+            this.loadStatistics(userId),
+            this.loadQuizHistory(userId)
+          ]);
+        } catch (error) {
+          console.error('Error loading history data:', error);
+        }
+      }
+
+      async loadStatistics(userId) {
+        try {
+          // Use authFetch from script.js to include JWT
+          const response = await authFetch(`/api/user-statistics/${userId}`);
+          if (!response.ok) throw new Error('Failed to load statistics');
+          const stats = await response.json();
+          this.updateStatistics(stats);
+        } catch (error) {
+          console.error('Error loading statistics:', error);
+          this.showError('Failed to load statistics');
+        }
+      }
+
+      async loadQuizHistory(userId) {
+        try {
+          // Use authFetch from script.js to include JWT
+          const response = await authFetch(`/api/user-statistics/${userId}`);
+          if (!response.ok) throw new Error('Failed to load quiz history');
+          const data = await response.json();
+          this.quizzes = data.recent_performance || [];
+          this.renderQuizList();
+        } catch (error) {
+          console.error('Error loading quiz history:', error);
+          this.showError('Failed to load quiz history');
+        }
+      }
+
+      updateStatistics(stats) {
+        const basic = stats.basic || {};
+        const streak = stats.streak || {};
+
+        // Update stat cards
+        document.getElementById('totalQuizzesStat').textContent = basic.total_quizzes || 0;
+        document.getElementById('averageScoreStat').textContent = basic.average_score + '%' || '0%';
+        document.getElementById('totalTimeStat').textContent = this.formatTime(basic.total_time || 0);
+        document.getElementById('currentStreakStat').textContent = streak.current_streak || 0;
+
+        // Update username
+        const username = stats.username || basic.username || 'Student';
+        const dashboardUsername = document.getElementById('dashboardUsername');
+        if (dashboardUsername) dashboardUsername.textContent = username;
+      }
+
+      renderQuizList() {
+        const quizList = document.getElementById('quizList');
+        const filteredQuizzes = this.filterQuizzes(this.quizzes);
+
+        if (filteredQuizzes.length === 0) {
+          quizList.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-clipboard-list"></i>
+              <h3>No quizzes found</h3>
+              <p>You haven't taken any quizzes yet. Start your learning journey!</p>
+            </div>
+          `;
+          return;
+        }
+
+        quizList.innerHTML = filteredQuizzes.map((quiz, index) => {
+          const safePercentage = (typeof quiz.percentage === 'number' && !isNaN(quiz.percentage)) ? quiz.percentage : 0;
+          return `
+          <div class="quiz-item">
+            <div class="quiz-header">
+              <div class="quiz-info">
+                <h3>Quiz #${this.quizzes.length - index}</h3>
+                <div class="quiz-meta">
+                  ${new Date(quiz.date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </div>
+              </div>
+              <div class="quiz-score">
+                <div class="score-value ${this.getScoreClass(safePercentage)}">
+                  ${safePercentage}%
+                </div>
+                <div class="score-label">${quiz.score}/${quiz.total}</div>
+              </div>
+            </div>
+            <div class="quiz-details">
+              <div class="detail-item">
+                <span class="detail-value">${quiz.score}</span>
+                <div class="detail-label">Correct Answers</div>
+              </div>
+              <div class="detail-item">
+                <span class="detail-value">${quiz.total - quiz.score}</span>
+                <div class="detail-label">Incorrect</div>
+              </div>
+              <div class="detail-item">
+                <span class="detail-value">${safePercentage}%</span>
+                <div class="detail-label">Accuracy</div>
+              </div>
+              <div class="detail-item">
+                <span class="detail-value">${this.getPerformanceLabel(safePercentage)}</span>
+                <div class="detail-label">Performance</div>
+              </div>
+            </div>
+          </div>
+        `;
+        }).join('');
+      }
+
+      filterQuizzes(quizzes) {
+        if (this.currentFilter === 'all') return quizzes;
+        if (this.currentFilter === 'passed') return quizzes.filter(q => q.percentage >= 70);
+        if (this.currentFilter === 'failed') return quizzes.filter(q => q.percentage < 70);
+        return quizzes;
+      }
+
+      handleFilterChange(filter) {
+        this.currentFilter = filter;
+        
+        // Update active tab
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+          tab.classList.remove('active');
+        });
+        document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+        
+        // Re-render list
+        this.renderQuizList();
+      }
+
+      getScoreClass(percentage) {
+        if (percentage >= 90) return 'excellent';
+        if (percentage >= 80) return 'good';
+        if (percentage >= 70) return 'average';
+        return 'poor';
+      }
+
+      getPerformanceLabel(percentage) {
+        if (percentage >= 90) return 'Excellent';
+        if (percentage >= 80) return 'Good';
+        if (percentage >= 70) return 'Average';
+        return 'Needs Work';
+      }
+
+      formatTime(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        
+        if (hours > 0) {
+          return `${hours}h ${minutes}m`;
+        }
+        return `${minutes}m`;
+      }
+
+      showError(message) {
+        const quizList = document.getElementById('quizList');
+        quizList.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-exclamation-triangle" style="color: #EF4444;"></i>
+            <h3>Error Loading Data</h3>
+            <p>${message}</p>
+          </div>
+        `;
+      }
+
+      logout() {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('currentUserId');
+        localStorage.removeItem('userId');
+        window.location.href = 'index.html';
+      }
+    }
+
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      new HistoryPage();
+    });
+  </script>
+</body>
+</html>

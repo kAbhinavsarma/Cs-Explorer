@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS Explorer - Quiz Results</title>
+  <link rel="stylesheet" href="css/dashboard-clean.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="quiz-config.js"></script>
+  <style>
+    /* Results page specific styles */
+    .results-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .page-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+      font-size: 1.125rem;
+      color: var(--gray-600);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .results-grid {
+      display: grid;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .results-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .card-badge {
+      padding: 0.375rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .card-badge.primary {
+      background: rgba(79, 70, 229, 0.1);
+      color: var(--primary);
+    }
+
+    .card-badge.success {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10B981;
+    }
+
+    .card-badge.warning {
+      background: rgba(245, 158, 11, 0.1);
+      color: #F59E0B;
+    }
+
+    .card-badge.info {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3B82F6;
+    }
+
+    /* Performance Overview */
+    .performance-overview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .performance-item {
+      text-align: center;
+      padding: 1.5rem;
+      border-radius: 12px;
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+    }
+
+    .performance-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 1.5rem;
+      color: white;
+    }
+
+    .performance-icon.excellent { background: linear-gradient(135deg, #10B981, #059669); }
+    .performance-icon.good { background: linear-gradient(135deg, #3B82F6, #1D4ED8); }
+    .performance-icon.average { background: linear-gradient(135deg, #F59E0B, #D97706); }
+    .performance-icon.poor { background: linear-gradient(135deg, #EF4444, #DC2626); }
+
+    .performance-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 0.5rem;
+    }
+
+    .performance-label {
+      font-size: 0.875rem;
+      color: var(--gray-600);
+      font-weight: 500;
+    }
+
+    /* Topic Performance */
+    .topic-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .topic-item {
+      padding: 1rem;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      background: var(--gray-50);
+      transition: all 0.2s ease;
+    }
+
+    .topic-item:hover {
+      background: white;
+      border-color: var(--primary);
+    }
+
+    .topic-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .topic-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+
+    .topic-score {
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .topic-score.excellent { color: #10B981; }
+    .topic-score.good { color: #3B82F6; }
+    .topic-score.average { color: #F59E0B; }
+    .topic-score.poor { color: #EF4444; }
+
+    .topic-progress {
+      background: var(--gray-200);
+      border-radius: 4px;
+      height: 6px;
+      overflow: hidden;
+    }
+
+    .topic-progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    .topic-progress-fill.excellent { background: #10B981; }
+    .topic-progress-fill.good { background: #3B82F6; }
+    .topic-progress-fill.average { background: #F59E0B; }
+    .topic-progress-fill.poor { background: #EF4444; }
+
+    .topic-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--gray-600);
+    }
+
+    /* Achievements */
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .achievement-item {
+      padding: 1.5rem;
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(124, 58, 237, 0.05));
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .achievement-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(79, 70, 229, 0.15);
+    }
+
+    .achievement-icon {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .achievement-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 0.5rem;
+    }
+
+    .achievement-desc {
+      font-size: 0.875rem;
+      color: var(--gray-600);
+      line-height: 1.4;
+    }
+
+    /* Latest Quiz Result */
+    .latest-quiz {
+      border: 2px solid var(--primary);
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(124, 58, 237, 0.05));
+    }
+
+    .quiz-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .summary-item {
+      text-align: center;
+    }
+
+    .summary-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 0.25rem;
+    }
+
+    .summary-label {
+      font-size: 0.875rem;
+      color: var(--gray-600);
+    }
+
+    .quiz-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+
+    .action-btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .action-btn.primary {
+      background: var(--primary);
+      color: white;
+      border: 2px solid var(--primary);
+    }
+
+    .action-btn.primary:hover {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+    }
+
+    .action-btn.secondary {
+      background: white;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+
+    .action-btn.secondary:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--gray-600);
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--gray-200);
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--gray-600);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      color: var(--gray-400);
+      margin-bottom: 1rem;
+    }
+
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 2rem;
+      transition: color 0.2s ease;
+    }
+
+    .back-button:hover {
+      color: var(--primary-dark);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="header-left">
+        <div class="logo">
+          <i class="fas fa-graduation-cap"></i>
+          <span>CS Explorer</span>
+        </div>
+      </div>
+      
+      <nav class="header-nav">
+        <a href="dashboard.html" class="nav-link">
+          <i class="fas fa-home"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="quiz-selection-new.html" class="nav-link">
+          <i class="fas fa-brain"></i>
+          <span>Take Quiz</span>
+        </a>
+        <a href="history-new.html" class="nav-link">
+          <i class="fas fa-chart-line"></i>
+          <span>Progress</span>
+        </a>
+        <a href="results-new.html" class="nav-link active">
+          <i class="fas fa-trophy"></i>
+          <span>Results</span>
+        </a>
+      </nav>
+      
+      <div class="header-right">
+        <div class="user-menu">
+          <button class="user-avatar" id="userMenuBtn">
+            <i class="fas fa-user-circle"></i>
+            <span class="user-name" id="dashboardUsername">Student</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          
+          <div class="user-dropdown" id="userDropdown">
+            <a href="index.html" class="dropdown-item" id="logoutBtn">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="results-container">
+      <a href="dashboard.html" class="back-button">
+        <i class="fas fa-arrow-left"></i>
+        Back to Dashboard
+      </a>
+
+      <div class="page-header">
+        <h1 class="page-title">
+          <i class="fas fa-trophy"></i>
+          Quiz Results & Analytics
+        </h1>
+        <p class="page-subtitle">
+          Detailed analysis of your performance and achievements
+        </p>
+      </div>
+
+      <div class="results-grid">
+        <!-- Performance Overview -->
+        <div class="results-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-chart-bar"></i>
+              Performance Overview
+            </h2>
+            <div class="card-badge primary">
+              <i class="fas fa-analytics"></i>
+              Stats
+            </div>
+          </div>
+          <div class="performance-overview" id="performanceOverview">
+            <div class="loading-state">
+              <div class="loading-spinner"></div>
+              <p>Loading performance data...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Latest Quiz Result -->
+        <div class="results-card latest-quiz" id="latestQuizCard" style="display: none;">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-star"></i>
+              Latest Quiz Result
+            </h2>
+            <div class="card-badge success">
+              <i class="fas fa-clock"></i>
+              Recent
+            </div>
+          </div>
+          <div class="quiz-summary" id="latestQuizSummary">
+            <!-- Latest quiz data will be populated here -->
+          </div>
+        </div>
+
+        <!-- Topic Performance -->
+        <div class="results-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-chart-pie"></i>
+              Topic Performance
+            </h2>
+            <div class="card-badge info">
+              <i class="fas fa-books"></i>
+              Topics
+            </div>
+          </div>
+          <div class="topic-list" id="topicList">
+            <div class="loading-state">
+              <div class="loading-spinner"></div>
+              <p>Loading topic performance...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Achievements -->
+        <div class="results-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-medal"></i>
+              Recent Achievements
+            </h2>
+            <div class="card-badge warning">
+              <i class="fas fa-trophy"></i>
+              Badges
+            </div>
+          </div>
+          <div class="achievements-grid" id="achievementsList">
+            <div class="loading-state">
+              <div class="loading-spinner"></div>
+              <p>Loading achievements...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="quiz-actions">
+        <a href="quiz-selection-new.html" class="action-btn primary">
+          <i class="fas fa-brain"></i>
+          Take New Quiz
+        </a>
+        <a href="history-new.html" class="action-btn secondary">
+          <i class="fas fa-chart-line"></i>
+          View Full History
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    // Results page specific functionality
+    class ResultsPage {
+      constructor() {
+        this.init();
+      }
+
+      init() {
+        this.setupEventListeners();
+        this.loadData();
+      }
+
+      setupEventListeners() {
+        // User menu functionality
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        
+        if (userMenuBtn) {
+          userMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('show');
+          });
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => {
+          if (userDropdown) {
+            userDropdown.classList.remove('show');
+          }
+        });
+
+        // Logout functionality
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.logout();
+          });
+        }
+      }
+
+      async loadData() {
+        const userId = getCurrentUserId();
+        if (!userId) {
+          console.error('No user ID found');
+          return;
+        }
+
+        try {
+          await Promise.all([
+            this.loadUserStatistics(userId),
+            this.loadTopicPerformance(userId),
+            this.loadUserBadges(userId)
+          ]);
+        } catch (error) {
+          console.error('Error loading results data:', error);
+        }
+      }
+
+      async loadUserStatistics(userId) {
+        try {
+          const response = await authFetch(`/api/user-statistics/${userId}`);
+          if (!response.ok) throw new Error('Failed to load statistics');
+          
+          const stats = await response.json();
+          this.updatePerformanceOverview(stats);
+          this.updateLatestQuiz(stats);
+          this.updateUsername(stats);
+        } catch (error) {
+          console.error('Error loading user statistics:', error);
+          this.showError('performanceOverview', 'Failed to load performance data');
+        }
+      }
+
+      async loadTopicPerformance(userId) {
+        try {
+          const response = await authFetch(`/api/topic-performance-data/${userId}`);
+          if (!response.ok) throw new Error('Failed to load topic performance');
+          
+          const topics = await response.json();
+          this.updateTopicPerformance(topics);
+        } catch (error) {
+          console.error('Error loading topic performance:', error);
+          this.showError('topicList', 'Failed to load topic performance');
+        }
+      }
+
+      async loadUserBadges(userId) {
+        try {
+          const response = await authFetch(`/api/user-badges/${userId}`);
+    // Make authFetch available if not already
+    if (typeof authFetch !== 'function') {
+      window.authFetch = async function(url, options = {}) {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          alert('Login required');
+          throw new Error('Login required');
+        }
+        const headers = options && options.headers ? { ...options.headers } : {};
+        headers['Authorization'] = `Bearer ${token}`;
+        return fetch(url, { ...options, headers });
+      };
+    }
+          if (!response.ok) throw new Error('Failed to load badges');
+          
+          const data = await response.json();
+          const badges = data.badges || []; // Handle the correct response format
+          this.updateAchievements(badges);
+        } catch (error) {
+          console.error('Error loading badges:', error);
+          this.showError('achievementsList', 'Failed to load achievements');
+        }
+      }
+
+      updatePerformanceOverview(stats) {
+        const basic = stats.basic || {};
+        const streak = stats.streak || {};
+        
+        const container = document.getElementById('performanceOverview');
+        
+        const accuracy = basic.total_attempted > 0 
+          ? Math.round((basic.total_correct / basic.total_attempted) * 100)
+          : 0;
+        // Ensure best_score is always shown as a percent
+        const bestScore = (typeof basic.best_score === 'number') ? basic.best_score + '%' : (basic.best_score || '0%');
+
+        container.innerHTML = `
+          <div class="performance-item">
+            <div class="performance-icon ${this.getScoreClass(basic.average_score)}">
+              <i class="fas fa-percentage"></i>
+            </div>
+            <div class="performance-value">${basic.average_score || 0}%</div>
+            <div class="performance-label">Average Score</div>
+          </div>
+          
+         
+          
+          <div class="performance-item">
+            <div class="performance-icon excellent">
+              <i class="fas fa-clipboard-list"></i>
+            </div>
+            <div class="performance-value">${basic.total_quizzes || 0}</div>
+            <div class="performance-label">Total Quizzes</div>
+          </div>
+          
+          <div class="performance-item">
+            <div class="performance-icon good">
+              <i class="fas fa-fire"></i>
+            </div>
+            <div class="performance-value">${streak.current_streak || 0}</div>
+            <div class="performance-label">Current Streak</div>
+          </div>
+          
+          <div class="performance-item">
+            <div class="performance-icon info">
+              <i class="fas fa-trophy"></i>
+            </div>
+            <div class="performance-value">${bestScore}</div>
+            <div class="performance-label">Best Score</div>
+          </div>
+          
+          <div class="performance-item">
+            <div class="performance-icon average">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="performance-value">${this.formatTime(basic.total_time || 0)}</div>
+            <div class="performance-label">Time Spent</div>
+          </div>
+        `;
+      }
+
+      updateLatestQuiz(stats) {
+        const recent = stats.recent_performance;
+        if (!recent || recent.length === 0) return;
+
+        const latest = recent[0];
+        const card = document.getElementById('latestQuizCard');
+        const summary = document.getElementById('latestQuizSummary');
+
+        summary.innerHTML = `
+          <div class="summary-item">
+            <div class="summary-value">${latest.score}</div>
+            <div class="summary-label">Correct Answers</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-value">${latest.total}</div>
+            <div class="summary-label">Total Questions</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-value">${latest.percentage}%</div>
+            <div class="summary-label">Score</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-value">${this.getPerformanceLabel(latest.percentage)}</div>
+            <div class="summary-label">Performance</div>
+          </div>
+        `;
+
+        card.style.display = 'block';
+      }
+
+      updateTopicPerformance(topics) {
+        const container = document.getElementById('topicList');
+        
+        if (!topics || topics.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-books"></i>
+              <h3>No topic data available</h3>
+              <p>Take some quizzes to see your topic performance</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Sort topics by average score
+        topics.sort((a, b) => b.avg_score - a.avg_score);
+
+        container.innerHTML = topics.map(topic => `
+          <div class="topic-item">
+            <div class="topic-header">
+              <div class="topic-name">${topic.topic}</div>
+              <div class="topic-score ${this.getScoreClass(topic.avg_score)}">${topic.avg_score}%</div>
+            </div>
+            <div class="topic-progress">
+              <div class="topic-progress-fill ${this.getScoreClass(topic.avg_score)}" 
+                   style="width: ${topic.avg_score}%"></div>
+            </div>
+            <div class="topic-stats">
+              <span>${topic.attempts} attempts</span>
+              <span>${topic.total_correct}/${topic.total_questions} correct</span>
+              <span>${topic.mastery_level || 'Beginner'}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      updateAchievements(badges) {
+        const container = document.getElementById('achievementsList');
+        
+        if (!badges || badges.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-medal"></i>
+              <h3>No achievements yet</h3>
+              <p>Complete quizzes to unlock achievements</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Show latest 6 achievements
+        const recentBadges = badges.slice(0, 6);
+
+        container.innerHTML = recentBadges.map(badge => `
+          <div class="achievement-item">
+            <div class="achievement-icon">${this.getAchievementIcon(badge.name)}</div>
+            <div class="achievement-name">${badge.name}</div>
+            <div class="achievement-desc">Earned ${this.formatDate(badge.date_awarded)}</div>
+          </div>
+        `).join('');
+      }
+
+      updateUsername(stats) {
+        const username = stats.username || stats.basic?.username || 'Student';
+         const dashboardUsername = document.getElementById('dashboardUsername');
+        if (dashboardUsername) dashboardUsername.textContent = username;
+      }
+
+      getScoreClass(score) {
+        if (score >= 90) return 'excellent';
+        if (score >= 80) return 'good';
+        if (score >= 70) return 'average';
+        return 'poor';
+      }
+
+      getPerformanceLabel(percentage) {
+        if (percentage >= 90) return 'Excellent';
+        if (percentage >= 80) return 'Good';
+        if (percentage >= 70) return 'Average';
+        return 'Needs Work';
+      }
+
+      getAchievementIcon(name) {
+        if (name.includes('Perfect')) return '🎯';
+        if (name.includes('Excellence')) return '⭐';
+        if (name.includes('High Achiever')) return '🏆';
+        if (name.includes('Speed')) return '⚡';
+        if (name.includes('Streak')) return '🔥';
+        if (name.includes('Expert')) return '🎓';
+        if (name.includes('Master')) return '🌟';
+        if (name.includes('Legend')) return '👑';
+        return '🏅';
+      }
+
+      formatTime(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        
+        if (hours > 0) {
+          return `${hours}h ${minutes}m`;
+        }
+        return `${minutes}m`;
+      }
+
+      formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric'
+        });
+      }
+
+      showError(containerId, message) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-exclamation-triangle" style="color: #EF4444;"></i>
+            <h3>Error Loading Data</h3>
+            <p>${message}</p>
+          </div>
+        `;
+      }
+
+      logout() {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('currentUserId');
+        localStorage.removeItem('userId');
+        window.location.href = 'index.html';
+      }
+    }
+
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      new ResultsPage();
+    });
+  </script>
+</body>
+</html>
