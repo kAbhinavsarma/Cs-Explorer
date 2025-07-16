@@ -11,6 +11,10 @@
     <img src="https://img.shields.io/badge/SQLite-Database-lightgrey?logo=sqlite">
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
   </p>
+
+<p>
+  <a href="https://cs-explorer-yawm.onrender.com/" target="_blank"><b>🚀 Live Demo: cs-explorer-yawm.onrender.com</b></a>
+</p>
 </div>
 
 
@@ -62,9 +66,19 @@ cs-explorer/
 
 ---
 
+
 ## 🛠️ Getting Started
 
-1. Install dependencies in both `backend/` and root if needed.
+### 🌐 Online
+
+- Try the app live: [https://cs-explorer-yawm.onrender.com/](https://cs-explorer-yawm.onrender.com/)
+
+### 💻 Local Development
+
+1. Install dependencies:
+   ```sh
+   npm install
+   ```
 2. Initialize the database using `init_db.sql` or `init-db-from-sql.js`.
 3. Start the project from the root directory:
    ```sh
